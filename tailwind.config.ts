@@ -11,6 +11,14 @@ export default {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
+        navyBlue: '#60a5fa',
+        crimsonRed: '#f87171',
+        goldYellow: '#FBBF24',
+        skyBlue: '#60A5FA',
+        white: '#FFFFFF',
+        emeraldGreen: '#10B981',
+        lightGray: '#F3F4F6'
+
       },
     },
   },

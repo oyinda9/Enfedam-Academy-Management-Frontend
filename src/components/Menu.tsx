@@ -46,10 +46,10 @@ const Menu = () => {
   ];
 
   return (
-    <nav className="p-4 w-64  shadow-md flex flex-col justify-between">
+    <nav className="p-4 w-64  flex flex-col justify-between items-center">
       {/* Main Menu */}
       <div>
-        <h2 className="text-lg font-bold mb-4">Main Menu</h2>
+    
         <ul className="space-y-4">
           {mainMenuItems.map((item, index) => (
             <li
@@ -57,7 +57,10 @@ const Menu = () => {
               className="flex items-center space-x-4 cursor-pointer hover:bg-gray-200 p-2 rounded"
             >
               <span className="text-blue-600">{item.icon}</span>
-              <a href={item.link} className="text-gray-800 text-sm font-medium hidden lg:block ">
+              <a
+                href={item.link}
+                className="text-gray-800 text-sm font-medium hidden lg:block "
+              >
                 {item.label}
               </a>
             </li>
@@ -74,8 +77,11 @@ const Menu = () => {
               key={index}
               className="flex items-center space-x-4 cursor-pointer hover:bg-gray-200 p-2 rounded"
             >
-              <span className="text-gray-600">{item.icon}</span>
-              <a href={item.link} className="text-gray-800 text-sm font-medium hidden lg:block">
+              <span className="text-blue-600">{item.icon}</span>
+              <a
+                href={item.link}
+                className="text-gray-800 text-sm font-medium hidden lg:block"
+              >
                 {item.label}
               </a>
             </li>
