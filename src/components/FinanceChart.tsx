@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { Expand } from "lucide-react";
+import { Ellipsis } from "lucide-react";
 import {
   LineChart,
   Line,
@@ -32,7 +32,7 @@ const FinanceChart = () => {
       {/* TITLE */}
       <div className="flex justify-between items-center">
         <h1 className="text-lg font-bold">Finance</h1>
-        <Expand className="cursor-pointer text-black" />
+        <Ellipsis className="cursor-pointer text-black" />
       </div>
       <div>
         <ResponsiveContainer width="100%" height={490}>

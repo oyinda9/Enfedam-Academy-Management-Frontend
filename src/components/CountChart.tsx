@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import { RadialBarChart, RadialBar, ResponsiveContainer } from "recharts";
-import { Expand } from "lucide-react";
+import { Ellipsis } from 'lucide-react';
 import { FaMale } from "react-icons/fa";
 import { FaFemale } from "react-icons/fa";
 
@@ -30,7 +30,7 @@ const CountChart = () => {
       {/* TITLE */}
       <div className="flex justify-between items-center">
         <h1 className="text-lg font-bold">Students</h1>
-        <Expand className="cursor-pointer text-black" />
+        <Ellipsis className="cursor-pointer text-black" />
       </div>
       {/* CHARTS */}
       <div className="relative w-full h-[75%]">

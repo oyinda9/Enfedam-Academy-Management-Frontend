@@ -1,6 +1,6 @@
 "use client";
 import React from 'react';
-import { Expand } from 'lucide-react';
+import { Ellipsis } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip ,ResponsiveContainer  } from 'recharts';
 
 const data = [
@@ -33,18 +33,18 @@ const data = [
 
 const AttendanceChart = () => {
   return (
-    <div className='bg-white rounded-lg p-4 h-[450px] shadow-md'>
+    <div className='bg-white rounded-lg p-4 h-[450px] w-full shadow-md'>
       <div className="flex justify-between items-center">
         <h1 className="text-lg font-bold">Attendance</h1>
-        <Expand className="cursor-pointer text-black" />
+        <Ellipsis className="cursor-pointer text-black" />
       </div>
       <ResponsiveContainer width="100%" height="100%" >
         <BarChart
           width={500}
           height={300}
           data={data}
-          barSize={20}
-          margin={{ top: 30, right: 30, left: 20, bottom: 5 }} 
+          barSize={13}
+          margin={{ top: 50, bottom: 12 }} 
          
         >
           <CartesianGrid strokeDasharray="3 3" vertical={false} stroke='#ddd' />

@@ -20,6 +20,12 @@ export default {
         lightGray: '#F3F4F6'
 
       },
+      fontFamily: {
+        poppins: ['Poppins', 'sans-serif'],
+        inter: ['Inter', 'sans-serif'],
+        playfair: ['Playfair Display', 'serif'],
+        nunito: ['Nunito', 'sans-serif'],
+      },
     },
   },
   plugins: [],
