@@ -16,6 +16,7 @@ import {
   Settings,
   UserCircle,
   LogOut,
+  Award
 } from "lucide-react";
 
 const Menu = () => {
@@ -30,7 +31,7 @@ const Menu = () => {
       label: "Teachers",
       icon: <User size={20} />,
       link: "/teachers",
-      visible: ["admin", "teacher"],
+      visible: ["admin",],
     },
     {
       label: "Parents",
@@ -42,7 +43,8 @@ const Menu = () => {
       label: "Students",
       icon: <GraduationCap size={20} />,
       link: "/students",
-      visible: ["admin", "teacher"],
+      visible: ["admin", "teacher","parent"
+      ],
     },
     {
       label: "Exams",
@@ -60,7 +62,7 @@ const Menu = () => {
       label: "Classes",
       icon: <School size={20} />,
       link: "/classes",
-      visible: ["admin", "teacher"],
+      visible: ["admin", "teacher","student"],
     },
     {
       label: "Assignments",
@@ -72,7 +74,13 @@ const Menu = () => {
       label: "Attendance",
       icon: <CheckCircle size={20} />,
       link: "/attendance",
-      visible: ["admin", "student", "parent", "teacher"],
+      visible: ["admin", "parent", "teacher"],
+    },
+    {
+      label: "Result",
+      icon: <Award size={20} />,
+      link: "/attendance",
+      visible: ["admin", "parent", "teacher","student"],
     },
     {
       label: "Events",
@@ -110,51 +118,26 @@ const Menu = () => {
   ];
 
   return (
-    <nav className="p-4 w-64  flex flex-col justify-between items-center">
+    <nav className="p-4 w-64 flex flex-col justify-between items-center">
       {/* Main Menu */}
       <div>
         <ul className="space-y-4">
-          {mainMenuItems.map((item) => (
-            <div className="flex flex-col gap-2" key={item.label}>
-              <span className="hidden lg:block text-gray-400 font-light my-4">
-                {item.label}
-              </span>
-
-              {mainMenuItems.map((item) => {
-                if (item.visible.includes(role)) {
-                  return (
-                    <Link
-                      href={item.link}
-                      key={item.label}
-                      className="flex items-center justify-center lg:justify-start gap-4 text-gray-500 py-2 md:px-2 rounded-md hover:bg-blue-300"
-                    >
-                      <span className="text-blue-600">{item.icon}</span>
-                      <span className="hidden lg:block">{item.label}</span>
-                    </Link>
-                  );
-                }
-              })}
-            </div>
-          ))}
-          {/* {mainMenuItems.map((item, index) => (
-            if(item.visible.includes(role)){
-              return(
-<li
-              key={index}
-              className="flex items-center space-x-4 cursor-pointer hover:bg-gray-200 p-2 rounded" 
-            >
-              <span className="text-blue-600">{item.icon}</span>
-              <a
-                href={item.link}
-                className="text-gray-800 text-sm font-medium hidden lg:block "
-              >
-                {item.label}
-              </a>
-            </li>
-              )
+          {mainMenuItems.map((item) => {
+            if (item.visible.includes(role)) {
+              return (
+                <li key={item.label} className="flex flex-col gap-2">
+                  <Link
+                    href={item.link}
+                    className="flex items-center justify-center lg:justify-start gap-4 text-gray-500 py-2 md:px-2 rounded-md hover:bg-blue-300"
+                  >
+                    <span className="text-blue-600">{item.icon}</span>
+                    <span className="hidden lg:block">{item.label}</span>
+                  </Link>
+                </li>
+              );
             }
-            
-          ))} */}
+            return null;
+          })}
         </ul>
       </div>
 
@@ -162,20 +145,25 @@ const Menu = () => {
       <div className="mt-8">
         <h2 className="text-lg font-bold mb-4">Account</h2>
         <ul className="space-y-4">
-          {secondaryMenuItems.map((item, index) => (
-            <li
-              key={index}
-              className="flex items-center space-x-4 cursor-pointer hover:bg-gray-200 p-2 rounded"
-            >
-              <span className="text-blue-600">{item.icon}</span>
-              <a
-                href={item.link}
-                className="text-gray-800 text-sm font-medium hidden lg:block"
-              >
-                {item.label}
-              </a>
-            </li>
-          ))}
+          {secondaryMenuItems.map((item) => {
+            if (item.visible.includes(role)) {
+              return (
+                <li
+                  key={item.label}
+                  className="flex items-center space-x-4 cursor-pointer hover:bg-gray-200 p-2 rounded"
+                >
+                  <Link
+                    href={item.link}
+                    className="flex items-center space-x-4 text-gray-800 text-sm font-medium"
+                  >
+                    <span className="text-blue-600">{item.icon}</span>
+                    <span className="hidden lg:block">{item.label}</span>
+                  </Link>
+                </li>
+              );
+            }
+            return null;
+          })}
         </ul>
       </div>
     </nav>
