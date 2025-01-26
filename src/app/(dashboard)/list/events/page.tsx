@@ -1,11 +1,12 @@
 import TableSearch from "@/components/TableSearch";
 import React from "react";
-import { Pencil, Trash2 } from "lucide-react";
-import { Filter, ArrowDownNarrowWide, Plus } from "lucide-react";
+// import { Pencil, Trash2 } from "lucide-react";
+import { Filter, ArrowDownNarrowWide,  } from "lucide-react";
 import Pagination from "@/components/Pagination";
 import Table from "@/components/Table";
 import Link from "next/link";
 import { eventsData, role } from "../../../../../lib/data";
+import FormModal from "@/components/FormModal";
 type Events = {
   id: number;
   title: string;
@@ -64,16 +65,12 @@ const EventsListPage = () => {
       <td>
         <div className="flex items-center gap-2 self-end">
           <Link href={`/list/teachers/${item.id}`}>
-            <button className="w-7 h-7 flex items-center justify-center rounded-full bg-blue-200">
-              <Pencil width={16} />
-            </button>
+          <FormModal table="event" type="update" id={item.id} data={undefined}/>
           </Link>
 
           {role === "admin" && (
-            <button className="w-7 h-7 flex items-center justify-center rounded-full bg-red-200">
-              <Trash2 width={16} />
-            </button>
-          )}
+                <FormModal table="event" type="delete" id={item.id} data={undefined}/>)}
+          
         </div>
       </td>
     </tr>
@@ -96,10 +93,8 @@ const EventsListPage = () => {
             </button>
 
             {role === "admin" && (
-              <button className="w-8 h-8 flex items-center justify-center rounded-full bg-green-300">
-                <Plus size={22} color="black" />
-              </button>
-            )}
+                  <FormModal table="event" type="create" data={undefined}/>)}
+
           </div>
         </div>
       </div>

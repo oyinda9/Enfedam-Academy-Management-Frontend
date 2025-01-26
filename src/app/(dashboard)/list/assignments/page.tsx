@@ -1,17 +1,18 @@
 import TableSearch from "@/components/TableSearch";
 import React from "react";
-import { Pencil , Trash2 } from "lucide-react";
+// import { Pencil , Trash2 } from "lucide-react";
 import { Filter, ArrowDownNarrowWide, Plus } from "lucide-react";
 import Pagination from "@/components/Pagination";
 import Table from "@/components/Table";
 import Link from "next/link";
-import { examsData, role } from "../../../../../lib/data";
-type Exams = {
+import { assignmentsData, role } from "../../../../../lib/data";
+import FormModal from "@/components/FormModal";
+type Assignment = {
   id: number;
   subject: string;
   class: number;
   teacher:number;
-  date:string;
+  dueDate:string;
 
   
 };
@@ -36,16 +37,16 @@ const columns = [
 
 
   {
-    headers: "Date",
-    accessor: "date",
+    headers: "Due Date",
+    accessor: "due date",
   },
   {
     headers: "Actions",
     accessor: "actions",
   },
 ];
-const LessonListPage = () => {
-  const renderRow = (item: Exams) => (
+const ExamListPage = () => {
+  const renderRow = (item: Assignment) => (
     <tr key={item.id} className="border-b border-blue-100 even:bg-slate-100 text-sm hover:bg-red-50">
       <td className="flex items-center gap-4 p-4">
         <div className="flex flex-col">
@@ -55,22 +56,18 @@ const LessonListPage = () => {
       </td>
       <td  className="hidden md:table-cell">{item.class}</td>
       <td className="hidden md:table-cell">{item.teacher}</td>
-      <td className="hidden md:table-cell">{item.date}</td>
+      <td className="hidden md:table-cell">{item.dueDate}</td>
     
       
       <td>
         <div className="flex items-center gap-2 self-end">
           <Link href={`/list/teachers/${item.id}`}>
-            <button className="w-7 h-7 flex items-center justify-center rounded-full bg-blue-200">
-              <Pencil  width={16} />
-            </button>
+          <FormModal table="assignment" type="update" id={item.id} data={undefined}/>
           </Link>
 
           {role === "admin" && (
-            <button className="w-7 h-7 flex items-center justify-center rounded-full bg-red-200">
-              <Trash2 width={16} />
-            </button>
-          )}
+                <FormModal table="assignment" type="delete" id={item.id} data={undefined}/>)}
+        
         </div>
       </td>
     </tr>
@@ -100,7 +97,7 @@ const LessonListPage = () => {
       </div>
       {/* LIST */}
       <div className="">
-        <Table columns={columns} renderRow={renderRow} data={examsData} />
+        <Table columns={columns} renderRow={renderRow} data={assignmentsData} />
       </div>
       {/* PAGINATION */}
 
@@ -109,4 +106,4 @@ const LessonListPage = () => {
   );
 };
 
-export default LessonListPage;
+export default ExamListPage;

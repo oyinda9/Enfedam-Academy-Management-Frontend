@@ -1,11 +1,11 @@
 import TableSearch from "@/components/TableSearch";
 import React from "react";
-import { View, Trash2 } from "lucide-react";
-import { Filter, ArrowDownNarrowWide, Plus } from "lucide-react";
+import { Filter, ArrowDownNarrowWide } from "lucide-react";
 import Pagination from "@/components/Pagination";
 import Table from "@/components/Table";
 import Link from "next/link";
 import { parentsData, role } from "../../../../../lib/data";
+import FormModal from "@/components/FormModal";
 type Parent = {
   id: number;
   name: string;
@@ -28,7 +28,7 @@ const columns = [
     headers: "Grade",
     accessor: "grade",
   },
- 
+
   {
     headers: "Phone",
     accessor: "phone",
@@ -38,16 +38,16 @@ const columns = [
     headers: "Address",
     accessor: "address",
   },
-  
 ];
 const ParentListPage = () => {
   const renderRow = (item: Parent) => (
-    <tr key={item.id} className="border-b border-blue-100 even:bg-slate-100 text-sm hover:bg-red-50">
+    <tr
+      key={item.id}
+      className="border-b border-blue-100 even:bg-slate-100 text-sm hover:bg-red-50"
+    >
       <td className="flex items-center gap-4 p-4">
-       
         <div className="flex flex-col">
           <h3 className="flex-semibold">{item.name}</h3>
-        
         </div>
       </td>
       <td className="hidden md:table-cell">{item.students.join(",")}</td>
@@ -56,16 +56,13 @@ const ParentListPage = () => {
       <td className="hidden md:table-cell">{item.address}</td>
       <td>
         <div className="flex items-center gap-2 self-end">
-          <Link href={`/list/teachers/${item.id}`}>
-            <button className="w-7 h-7 flex items-center justify-center rounded-full bg-blue-200">
-              <View width={16} />
-            </button>
-          </Link>
+          <Link href={`/list/teachers/${item.id}`}></Link>
 
           {role === "admin" && (
-            <button className="w-7 h-7 flex items-center justify-center rounded-full bg-red-200">
-              <Trash2 width={16} />
-            </button>
+            <>
+              <FormModal table="parent" type="update" data={item} />
+              <FormModal table="parent" type="delete" id={item.id} data={undefined} />
+            </>
           )}
         </div>
       </td>
@@ -88,9 +85,7 @@ const ParentListPage = () => {
               <ArrowDownNarrowWide size={22} color="black" />
             </button>
 
-          {role === "admin" && (<button className="w-8 h-8 flex items-center justify-center rounded-full bg-green-300">
-              <Plus size={22} color="black" />
-            </button>)} 
+            {role === "admin" && <FormModal table="parent" type="create" data={undefined} />}
           </div>
         </div>
       </div>

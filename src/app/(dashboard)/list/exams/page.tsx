@@ -1,17 +1,18 @@
 import TableSearch from "@/components/TableSearch";
 import React from "react";
 import { Pencil , Trash2 } from "lucide-react";
-import { Filter, ArrowDownNarrowWide, Plus } from "lucide-react";
+import { Filter, ArrowDownNarrowWide,  } from "lucide-react";
 import Pagination from "@/components/Pagination";
 import Table from "@/components/Table";
 import Link from "next/link";
-import { assignmentsData, role } from "../../../../../lib/data";
-type Assignment = {
+import { examsData, role } from "../../../../../lib/data";
+import FormModal from "@/components/FormModal";
+type Exams = {
   id: number;
   subject: string;
   class: number;
   teacher:number;
-  dueDate:string;
+  date:string;
 
   
 };
@@ -36,16 +37,16 @@ const columns = [
 
 
   {
-    headers: "Due Date",
-    accessor: "due date",
+    headers: "Date",
+    accessor: "date",
   },
   {
     headers: "Actions",
     accessor: "actions",
   },
 ];
-const ExamListPage = () => {
-  const renderRow = (item: Assignment) => (
+const LessonListPage = () => {
+  const renderRow = (item: Exams) => (
     <tr key={item.id} className="border-b border-blue-100 even:bg-slate-100 text-sm hover:bg-red-50">
       <td className="flex items-center gap-4 p-4">
         <div className="flex flex-col">
@@ -55,7 +56,7 @@ const ExamListPage = () => {
       </td>
       <td  className="hidden md:table-cell">{item.class}</td>
       <td className="hidden md:table-cell">{item.teacher}</td>
-      <td className="hidden md:table-cell">{item.dueDate}</td>
+      <td className="hidden md:table-cell">{item.date}</td>
     
       
       <td>
@@ -92,15 +93,14 @@ const ExamListPage = () => {
               <ArrowDownNarrowWide size={22} color="black" />
             </button>
 
-          {role === "admin" && (<button className="w-8 h-8 flex items-center justify-center rounded-full bg-green-300">
-              <Plus size={22} color="black" />
-            </button>)} 
+          {role === "admin" && (
+                 <FormModal table="teacher" type="delete" id={item.id} data={undefined}/>)}
           </div>
         </div>
       </div>
       {/* LIST */}
       <div className="">
-        <Table columns={columns} renderRow={renderRow} data={assignmentsData} />
+        <Table columns={columns} renderRow={renderRow} data={examsData} />
       </div>
       {/* PAGINATION */}
 
@@ -109,4 +109,4 @@ const ExamListPage = () => {
   );
 };
 
-export default ExamListPage;
+export default LessonListPage;

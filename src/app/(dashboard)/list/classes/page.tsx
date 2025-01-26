@@ -1,11 +1,12 @@
 import TableSearch from "@/components/TableSearch";
 import React from "react";
 import { View, Trash2 } from "lucide-react";
-import { Filter, ArrowDownNarrowWide, Plus } from "lucide-react";
+import { Filter, ArrowDownNarrowWide,  } from "lucide-react";
 import Pagination from "@/components/Pagination";
 import Table from "@/components/Table";
 import Link from "next/link";
 import { classesData, role } from "../../../../../lib/data";
+import FormModal from "@/components/FormModal";
 type Classes = {
   id: number;
   name: string;
@@ -89,9 +90,8 @@ const ClassesListPage = () => {
               <ArrowDownNarrowWide size={22} color="black" />
             </button>
 
-          {role === "admin" && (<button className="w-8 h-8 flex items-center justify-center rounded-full bg-green-300">
-              <Plus size={22} color="black" />
-            </button>)} 
+          {role === "admin" && (
+               <FormModal table="class" type="create"  data={undefined}/>)}
           </div>
         </div>
       </div>
