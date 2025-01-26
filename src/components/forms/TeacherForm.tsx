@@ -1,6 +1,7 @@
 "use client";
 import { z } from "zod";
 import React from "react";
+import { CloudUpload  } from 'lucide-react';
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -17,6 +18,8 @@ const schema = z.object({
   lastName: z.string().min(1, { message: "Last name is required!" }),
   phone: z.string().min(1, { message: "Phone is required!" }),
   address: z.string().min(1, { message: "Address is required!" }),
+  bloodtype: z.string().min(1, { message: "Blood  type is required!" }),
+
   birthday: z.string().min(1, { message: "Birthday is required!" }),
   sex: z.enum(["male", "female"], { message: "Sex is required!" }),
   img: z.instanceof(File, { message: "Image is required!" }),
@@ -174,19 +177,46 @@ const TeacherForm = ({
           {errors.sex?.message?.toString()}
         </p>
       </div>
-    </div>
   
-    {/* Profile Image */}
-    <div className="mb-6">
-      <label className="block text-sm font-medium text-gray-700">Profile Image</label>
-      <input
-        type="file"
-        {...register("img")}
-        className="ring-1 ring-gray-600 p-2 rounded-md text-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-      />
-      <p className="text-xs text-red-600">
-        {errors.img?.message?.toString()}
-      </p>
+      {/* Blood Type */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700">Blood Type</label>
+        <select
+          {...register("bloodType")}
+          className="ring-1 ring-gray-600 p-2 rounded-md text-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          <option value="">Select</option>
+          <option value="A+">A+</option>
+          <option value="A-">A-</option>
+          <option value="B+">B+</option>
+          <option value="B-">B-</option>
+          <option value="O+">O+</option>
+          <option value="O-">O-</option>
+          <option value="AB+">AB+</option>
+          <option value="AB-">AB-</option>
+        </select>
+        <p className="text-xs text-red-600">
+          {errors.bloodType?.message?.toString()}
+        </p>
+      </div>
+  
+      {/* Profile Image */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700">Profile Image</label>
+       <div className="flex gap-2">
+      
+        <input
+          type="file"
+          {...register("img")}
+          className="ring-1 ring-gray-600 p-2 rounded-md text-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+         <CloudUpload  className="rounded-md" />
+       </div>
+        
+        <p className="text-xs text-red-600">
+          {errors.img?.message?.toString()}
+        </p>
+      </div>
     </div>
   
     {/* Submit Button */}
@@ -199,6 +229,7 @@ const TeacherForm = ({
       </button>
     </div>
   </form>
+  
   
   );
 };
