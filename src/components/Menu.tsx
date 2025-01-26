@@ -24,7 +24,7 @@ const Menu = () => {
     {
       label: "Home",
       icon: <Home size={20} />,
-      link: "/home",
+      link: "/",
       visible: ["admin", "student", "parent", "teacher"],
     },
     {
@@ -79,7 +79,7 @@ const Menu = () => {
     {
       label: "Result",
       icon: <Award size={20} />,
-      link: "/list/attendance",
+      link: "/list/results",
       visible: ["admin", "parent", "teacher","student"],
     },
     {
