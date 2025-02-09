@@ -172,7 +172,7 @@ const SingleTeacherPage = () => {
               {" "}
               Teacher&apos;s Classes
             </Link>
-            <Link className="p-3 rounded-md bg-pink-200" href="/">
+            <Link className="p-3 rounded-md bg-pink-200" href={`/list/students?teacher=${"teacher2"}`}>
               {" "}
               Teacher&apos;s Students
             </Link>

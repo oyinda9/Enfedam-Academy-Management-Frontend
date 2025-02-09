@@ -5,13 +5,13 @@ import Table from "@/components/Table";
 import Link from "next/link";
 import TableSearch from "@/components/TableSearch";
 import FormModal from "@/components/FormModal";
-import { role, teachersData } from "../../../../lib/data";
+import { role } from "../../../../lib/data";
 import { Class, Lesson, Prisma, Teacher } from "@prisma/client";
 import Image from "next/image";
 import { Subjects } from "react-hook-form";
 import prisma from "@/lib/prisma";
 import { ITEM_PER_PAGE } from "@/lib/settings";
-import { object } from "zod";
+
 
 type TeacherList = Teacher & { subjects: Subjects[] } & {
   lessons: Lesson[];
