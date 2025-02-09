@@ -6,11 +6,12 @@ import Link from "next/link";
 import TableSearch from "@/components/TableSearch";
 import FormModal from "@/components/FormModal";
 import { role, teachersData } from "../../../../lib/data";
-import { Class, Lesson, Teacher } from "@prisma/client";
+import { Class, Lesson, Prisma, Teacher } from "@prisma/client";
 import Image from "next/image";
 import { Subjects } from "react-hook-form";
 import prisma from "@/lib/prisma";
 import { ITEM_PER_PAGE } from "@/lib/settings";
+import { object } from "zod";
 
 type TeacherList = Teacher & { subjects: Subjects[] } & {
   lessons: Lesson[];
@@ -92,11 +93,45 @@ const renderRow = (item: TeacherList) => (
     </td>
   </tr>
 );
-const TeacherListPage = async ({searchParams}:{searchParams:{[key:string]:string} | undefined}) => {
-  const {page , ...queryParams} =searchParams
-  const p =page  ? parseInt(page):1;
+const TeacherListPage = async ({
+  searchParams,
+}: {
+  searchParams: { [key: string]: string } | undefined;
+}) => {
+  const { page, ...queryParams } = searchParams;
+  const p = page ? parseInt(page) : 1;
+
+  // URL QUERY PARAMS RULES
+  const query: Prisma.TeacherWhereInput = {}; // Initialize the query object
+
+  if (queryParams) {
+    for (const [key, value] of Object.entries(queryParams)) {
+      if (value !== undefined) {
+        switch (key) {
+          case "classId": {
+            query.lessons = {
+              some: {
+                classId: parseInt(value, 10),
+              },
+            };
+            break;
+          }
+          case "search": {
+            query.name = {
+              contains: value,
+              mode: "insensitive",
+            };
+            break;
+          }
+        }
+      }
+    }
+  }
+
+  // Execute Prisma transaction for fetching data and count
   const [data, count] = await prisma.$transaction([
     prisma.teacher.findMany({
+      where: query,
       include: {
         subjects: true,
         classes: true,
@@ -105,13 +140,14 @@ const TeacherListPage = async ({searchParams}:{searchParams:{[key:string]:string
       take: ITEM_PER_PAGE,
       skip: ITEM_PER_PAGE * (p - 1),
     }),
-    prisma.teacher.count(),
+    prisma.teacher.count({
+      where: query,
+    }),
   ]);
-  
- 
+
   // console.log(count);
   console.log(searchParams);
-  
+
   return (
     <div className="bg-white p-4 rounded-md flex-1 mt-0">
       {/* TOP SECTION */}
