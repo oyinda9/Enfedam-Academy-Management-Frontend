@@ -1,19 +1,18 @@
 import TableSearch from "@/components/TableSearch";
 import React from "react";
 import { View, Trash2 } from "lucide-react";
-import { Filter, ArrowDownNarrowWide,  } from "lucide-react";
+import { Filter, ArrowDownNarrowWide } from "lucide-react";
 import Pagination from "@/components/Pagination";
 import Table from "@/components/Table";
 import Link from "next/link";
-import { classesData, role } from "../../../../../lib/data";
+import { classesData, role } from "../../../../lib/data";
 import FormModal from "@/components/FormModal";
 type Classes = {
   id: number;
   name: string;
   capacity: number;
-  grade:number;
-  supervisor:string;
-  
+  grade: number;
+  supervisor: string;
 };
 const columns = [
   {
@@ -23,20 +22,16 @@ const columns = [
   {
     headers: "Capacity",
     accessor: "capacity",
-   
   },
   {
     headers: "Grade",
     accessor: "grade",
-   
   },
   {
     headers: "Teacher",
     accessor: "teacher",
     className: "hidden md:table-cell",
   },
- 
-
 
   {
     headers: "Actions",
@@ -45,17 +40,19 @@ const columns = [
 ];
 const ClassesListPage = () => {
   const renderRow = (item: Classes) => (
-    <tr key={item.id} className="border-b border-blue-100 even:bg-slate-100 text-sm hover:bg-red-50">
+    <tr
+      key={item.id}
+      className="border-b border-blue-100 even:bg-slate-100 text-sm hover:bg-red-50"
+    >
       <td className="flex items-center gap-4 p-4">
         <div className="flex flex-col">
           <h3 className="flex-semibold">{item.name}</h3>
-         
         </div>
       </td>
-      <td  className="hidden md:table-cell">{item.capacity}</td>
+      <td className="hidden md:table-cell">{item.capacity}</td>
       <td className="hidden md:table-cell">{item.grade}</td>
       <td className="hidden md:table-cell">{item.supervisor}</td>
-      
+
       <td>
         <div className="flex items-center gap-2 self-end">
           <Link href={`/list/teachers/${item.id}`}>
@@ -90,8 +87,9 @@ const ClassesListPage = () => {
               <ArrowDownNarrowWide size={22} color="black" />
             </button>
 
-          {role === "admin" && (
-               <FormModal table="class" type="create"  data={undefined}/>)}
+            {role === "admin" && (
+              <FormModal table="class" type="create" data={undefined} />
+            )}
           </div>
         </div>
       </div>

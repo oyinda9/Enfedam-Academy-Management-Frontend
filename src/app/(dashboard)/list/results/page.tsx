@@ -1,54 +1,46 @@
 import TableSearch from "@/components/TableSearch";
 import React from "react";
-import { Pencil , Trash2 } from "lucide-react";
+import { Pencil, Trash2 } from "lucide-react";
 import { Filter, ArrowDownNarrowWide, Plus } from "lucide-react";
 import Pagination from "@/components/Pagination";
 import Table from "@/components/Table";
 import Link from "next/link";
-import { resultsData, role } from "../../../../../lib/data";
+import { resultsData, role } from "../../../../lib/data";
 type Result = {
   id: number;
   subject: string;
   class: number;
-  teacher:number;
-  type:"exam"|"assignment";
-  student:string;
-  date:string;
-  score:number
-
-  
+  teacher: number;
+  type: "exam" | "assignment";
+  student: string;
+  date: string;
+  score: number;
 };
 const columns = [
-
   {
     headers: "Subject Name",
     accessor: "subject",
-   
   },
   {
     headers: "Student",
     accessor: "student",
     className: "hidden md:table-cell",
   },
- 
+
   {
     headers: "Class",
     accessor: "class",
-   
   },
   {
     headers: "Score",
     accessor: "score",
     className: "hidden md:table-cell",
-   
   },
   {
     headers: "Teacher",
     accessor: "teacher",
     className: "hidden md:table-cell",
   },
- 
-
 
   {
     headers: "Date",
@@ -61,25 +53,26 @@ const columns = [
 ];
 const ResultsListPage = () => {
   const renderRow = (item: Result) => (
-    <tr key={item.id} className="border-b border-blue-100 even:bg-slate-100 text-sm hover:bg-red-50">
+    <tr
+      key={item.id}
+      className="border-b border-blue-100 even:bg-slate-100 text-sm hover:bg-red-50"
+    >
       <td className="flex items-center gap-4 p-4">
         <div className="flex flex-col">
           <h3 className="flex-semibold">{item.subject}</h3>
-         
         </div>
       </td>
-      <td  className="hidden md:table-cell">{item.student}</td>
-      <td  className="hidden md:table-cell">{item.class}</td>
-      <td  className="hidden md:table-cell">{item.score}</td>
+      <td className="hidden md:table-cell">{item.student}</td>
+      <td className="hidden md:table-cell">{item.class}</td>
+      <td className="hidden md:table-cell">{item.score}</td>
       <td className="hidden md:table-cell">{item.teacher}</td>
       <td className="hidden md:table-cell">{item.date}</td>
-    
-      
+
       <td>
         <div className="flex items-center gap-2 self-end">
           <Link href={`/list/teachers/${item.id}`}>
             <button className="w-7 h-7 flex items-center justify-center rounded-full bg-blue-200">
-              <Pencil  width={16} />
+              <Pencil width={16} />
             </button>
           </Link>
 
@@ -109,9 +102,11 @@ const ResultsListPage = () => {
               <ArrowDownNarrowWide size={22} color="black" />
             </button>
 
-          {role === "admin" && (<button className="w-8 h-8 flex items-center justify-center rounded-full bg-green-300">
-              <Plus size={22} color="black" />
-            </button>)} 
+            {role === "admin" && (
+              <button className="w-8 h-8 flex items-center justify-center rounded-full bg-green-300">
+                <Plus size={22} color="black" />
+              </button>
+            )}
           </div>
         </div>
       </div>

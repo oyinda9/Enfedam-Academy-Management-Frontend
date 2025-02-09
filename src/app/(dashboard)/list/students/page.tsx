@@ -1,11 +1,11 @@
 import TableSearch from "@/components/TableSearch";
 import React from "react";
-import { View,  } from "lucide-react";
-import { Filter, ArrowDownNarrowWide,  } from "lucide-react";
+import { View } from "lucide-react";
+import { Filter, ArrowDownNarrowWide } from "lucide-react";
 import Pagination from "@/components/Pagination";
 import Table from "@/components/Table";
 import Link from "next/link";
-import { role, studentsData } from "../../../../../lib/data";
+import { role, studentsData } from "../../../../lib/data";
 import FormModal from "@/components/FormModal";
 type Student = {
   id: number;
@@ -32,7 +32,7 @@ const columns = [
     headers: "Grade",
     accessor: "grade",
   },
- 
+
   {
     headers: "Phone",
     accessor: "phone",
@@ -49,7 +49,10 @@ const columns = [
 ];
 const StudentListPage = () => {
   const renderRow = (item: Student) => (
-    <tr key={item.id} className="border-b border-blue-100 even:bg-slate-100 text-sm hover:bg-red-50">
+    <tr
+      key={item.id}
+      className="border-b border-blue-100 even:bg-slate-100 text-sm hover:bg-red-50"
+    >
       <td className="flex items-center gap-4 p-4">
         <img
           src={item.photo}
@@ -76,8 +79,13 @@ const StudentListPage = () => {
           </Link>
 
           {role === "admin" && (
-             <FormModal table="student" type="delete" id={item.id} data={undefined}/>)}
-          
+            <FormModal
+              table="student"
+              type="delete"
+              id={item.id}
+              data={undefined}
+            />
+          )}
         </div>
       </td>
     </tr>
@@ -99,8 +107,9 @@ const StudentListPage = () => {
               <ArrowDownNarrowWide size={22} color="black" />
             </button>
 
-          {role === "admin" && (
-             <FormModal table="student" type="create" data={undefined}/>)}
+            {role === "admin" && (
+              <FormModal table="student" type="create" data={undefined} />
+            )}
           </div>
         </div>
       </div>

@@ -4,7 +4,7 @@ import { Filter, ArrowDownNarrowWide } from "lucide-react";
 import Pagination from "@/components/Pagination";
 import Table from "@/components/Table";
 import Link from "next/link";
-import { parentsData, role } from "../../../../../lib/data";
+import { parentsData, role } from "../../../../lib/data";
 import FormModal from "@/components/FormModal";
 type Parent = {
   id: number;
@@ -61,7 +61,12 @@ const ParentListPage = () => {
           {role === "admin" && (
             <>
               <FormModal table="parent" type="update" data={item} />
-              <FormModal table="parent" type="delete" id={item.id} data={undefined} />
+              <FormModal
+                table="parent"
+                type="delete"
+                id={item.id}
+                data={undefined}
+              />
             </>
           )}
         </div>
@@ -85,7 +90,9 @@ const ParentListPage = () => {
               <ArrowDownNarrowWide size={22} color="black" />
             </button>
 
-            {role === "admin" && <FormModal table="parent" type="create" data={undefined} />}
+            {role === "admin" && (
+              <FormModal table="parent" type="create" data={undefined} />
+            )}
           </div>
         </div>
       </div>

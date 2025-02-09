@@ -15,6 +15,7 @@ import BigCalendar from "@/components/BigCalendar";
 import Announcements from "@/components/Announcements";
 import Link from "next/link";
 import TeacherPerfomance from "@/components/TeacherPerfomance";
+import FormModal from "@/components/FormModal";
 
 const SingleTeacherPage = () => {
   return (
@@ -39,6 +40,28 @@ const SingleTeacherPage = () => {
             {/* USER DETAILS */}
             <div className="w-[90%] flex flex-col justify-between gap-4">
               <h1 className="text-xl font-semibold">Sholanke Precious</h1>
+              <div className="flex items-center font-semibold gap-4">
+              <FormModal
+                table="teacher"
+                type="update"
+                data={{
+                  id: 1,
+                  username: "john_doe123", // Minimum 3, maximum 20 characters
+                  email: "john.doe@example.com", // Valid email format
+                  password: "password123", // Minimum 8 characters
+                  firstName: "John", // Required
+                  lastName: "Doe", // Required
+                  phone: "1234567890", // Required
+                  address: "123 Main Street, Springfield", // Required
+                  bloodtype: "O+", // Required
+                  birthday: "1990-01-01", // Required
+                  sex: "male", // Enum: "male" or "female"
+                  img: new File(["dummy content"], "profile.jpg", {
+                    type: "image/jpeg",
+                  }), // Required file instance
+                }}
+              />
+              </div>
               <p className="text-sm text-gray-500">
                 Lorem ipsum dolor sit amet consectetur, adipisicing elit.
                 Repellendus ipsam.
@@ -101,7 +124,6 @@ const SingleTeacherPage = () => {
               </div>
               <span className="text-sm font-semibold text-gray-900 ">12</span>
             </div>
-
 
             {/* Classes */}
             <div className="flex items-center justify-between  bg-white p-2 rounded-md">

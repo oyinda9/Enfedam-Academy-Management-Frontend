@@ -82,7 +82,7 @@ const CountChart = () => {
           <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center"></div>
           {/* Number Outside Circle */}
           <h1 className="font-bold text-blue-500">1,233</h1>
-          <h2 className="text-sm text-center">Girls (45%)</h2>
+          <h2 className="text-sm text-center">Boys (45%)</h2>
         </div>
       </div>
     </div>

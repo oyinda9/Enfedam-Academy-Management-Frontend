@@ -1,11 +1,11 @@
-"use client"
+"use client";
 import TableSearch from "@/components/TableSearch";
 import React from "react";
 import { Pencil, Filter, ArrowDownNarrowWide } from "lucide-react";
 import Pagination from "@/components/Pagination";
 import Table from "@/components/Table";
 import Link from "next/link";
-import { examsData, role } from "../../../../../lib/data";
+import { examsData, role } from "../../../../lib/data";
 import FormModal from "@/components/FormModal";
 
 type Exams = {

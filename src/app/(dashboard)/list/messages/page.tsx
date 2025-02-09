@@ -5,7 +5,7 @@ import { Filter, ArrowDownNarrowWide, Plus } from "lucide-react";
 import Pagination from "@/components/Pagination";
 import Table from "@/components/Table";
 import Link from "next/link";
-import { announcementsData, role } from "../../../../../lib/data";
+import { announcementsData, role } from "../../../../lib/data";
 type Message = {
   id: number;
   title: string;

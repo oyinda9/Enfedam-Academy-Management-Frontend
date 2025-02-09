@@ -5,14 +5,13 @@ import { Filter, ArrowDownNarrowWide, Plus } from "lucide-react";
 import Pagination from "@/components/Pagination";
 import Table from "@/components/Table";
 import Link from "next/link";
-import {  role, subjectsData } from "../../../../../lib/data";
+import { role, subjectsData } from "../../../../lib/data";
 type Subject = {
   id: number;
   name: string;
   teachers: string[];
 };
 const columns = [
-
   {
     headers: "Suject Name",
     accessor: "subject",
@@ -28,21 +27,20 @@ const columns = [
     headers: "Actions",
     accessor: "action",
   },
-
-  
 ];
 const SubjectListPage = () => {
   const renderRow = (item: Subject) => (
-    <tr key={item.id} className="border-b border-blue-100 even:bg-slate-100 text-sm hover:bg-red-50">
+    <tr
+      key={item.id}
+      className="border-b border-blue-100 even:bg-slate-100 text-sm hover:bg-red-50"
+    >
       <td className="flex items-center gap-4 p-4">
-       
         <div className="flex flex-col">
           <h3 className="flex-semibold">{item.name}</h3>
-        
         </div>
       </td>
       <td className="hidden md:table-cell">{item.teachers.join(",")}</td>
-    
+
       <td>
         <div className="flex items-center gap-2 self-end">
           <Link href={`/list/teachers/${item.id}`}>
@@ -77,9 +75,11 @@ const SubjectListPage = () => {
               <ArrowDownNarrowWide size={22} color="black" />
             </button>
 
-          {role === "admin" && (<button className="w-8 h-8 flex items-center justify-center rounded-full bg-green-300">
-              <Plus size={22} color="black" />
-            </button>)} 
+            {role === "admin" && (
+              <button className="w-8 h-8 flex items-center justify-center rounded-full bg-green-300">
+                <Plus size={22} color="black" />
+              </button>
+            )}
           </div>
         </div>
       </div>

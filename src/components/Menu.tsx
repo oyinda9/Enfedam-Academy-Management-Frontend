@@ -1,6 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import { role } from "../../lib/data";
+import { role } from "../lib/data";
 import {
   Home,
   User,
@@ -16,7 +16,7 @@ import {
   Settings,
   UserCircle,
   LogOut,
-  Award
+  Award,
 } from "lucide-react";
 
 const Menu = () => {
@@ -31,7 +31,7 @@ const Menu = () => {
       label: "Teachers",
       icon: <User size={20} />,
       link: "/list/teachers",
-      visible: ["admin",],
+      visible: ["admin"],
     },
     {
       label: "Parents",
@@ -43,8 +43,7 @@ const Menu = () => {
       label: "Students",
       icon: <GraduationCap size={20} />,
       link: "/list/students",
-      visible: ["admin", "teacher","parent"
-      ],
+      visible: ["admin", "teacher", "parent"],
     },
     {
       label: "Exams",
@@ -62,7 +61,7 @@ const Menu = () => {
       label: "Classes",
       icon: <School size={20} />,
       link: "/list/classes",
-      visible: ["admin", "teacher","student"],
+      visible: ["admin", "teacher", "student"],
     },
     {
       label: "Assignments",
@@ -80,7 +79,7 @@ const Menu = () => {
       label: "Result",
       icon: <Award size={20} />,
       link: "/list/results",
-      visible: ["admin", "parent", "teacher","student"],
+      visible: ["admin", "parent", "teacher", "student"],
     },
     {
       label: "Events",

@@ -25,7 +25,7 @@ const schema = z.object({
   img: z.instanceof(File, { message: "Image is required!" }),
 });
 
-const TeacherForm = ({
+const ParentForm = ({
   type,
   data,
 }: {
@@ -47,7 +47,7 @@ const TeacherForm = ({
   return (
     <form className="p-6" onSubmit={onSubmit}>
       {/* Title */}
-      <h1 className="text-xl font-semibold mb-6">CREATE NEW TEACHER</h1>
+      <h1 className="text-xl font-semibold mb-6">CREATE NEW STUDENT</h1>
 
       {/* Section: Authentication Information */}
       <p className="text-lg font-medium mb-4">Authentication Information</p>
@@ -250,4 +250,4 @@ const TeacherForm = ({
   );
 };
 
-export default TeacherForm;
+export default ParentForm;

@@ -2,8 +2,29 @@
 
 import React, { useState } from "react";
 import { View, Trash2, Plus, X } from "lucide-react";
-import TeacherForm from "./forms/TeacherForm";
+// import TeacherForm from "./forms/TeacherForm";
+// import StudentForm from "./forms/StudentForm";
+import dynamic from "next/dynamic";
 
+const TeacherForm =dynamic(()=> import ("./forms/TeacherForm"),{
+    loading:()=><h1>Loading .....</h1>,
+});
+
+const StudentForm =dynamic(()=> import ("./forms/StudentForm"),{
+    loading:()=><h1>Loading .....</h1>,
+})
+
+const ParentForm =dynamic(()=> import ("./forms/ParentForm"),{
+    loading:()=><h1>Loading .....</h1>,
+})
+
+const forms: {
+  [key: string]: (type: "create" | "update", data?: any) => JSX.Element;
+} = {
+  teacher: (type, data) => <TeacherForm type={type} data={data} />,
+  student: (type, data) => <StudentForm type={type} data={data} />,
+  parent: (type, data) => <ParentForm type={type} data={data} />,
+};
 const FormModal = ({
   table,
   type,
@@ -47,15 +68,22 @@ const FormModal = ({
 
   const [open, setOpen] = useState(false);
 
-  const Form =()=>{
-    return type === "delete" && id ?(
-        <form action="" className="p-4 flex flex-col gap-4">
-            <span className="text-center font-medium">All Date will be lost , Are you sure you want to delete this item {table} ?</span>
-            <button className="bg-red-700 text-white px-4 py-2 rounded-md border-none w-max self-center">Delete</button>
-        </form>
+  const Form = () => {
+    return type === "delete" && id ? (
+      <form action="" className="p-4 flex flex-col gap-4">
+        <span className="text-center font-medium">
+          All Date will be lost , Are you sure you want to delete this item{" "}
+          {table} ?
+        </span>
+        <button className="bg-red-700 text-white px-4 py-2 rounded-md border-none w-max self-center">
+          Delete
+        </button>
+      </form>
+    ) : type === "create" || type === "update" ? (
+      forms[table](type, data)
     ) : (
-        <TeacherForm type="create"/>
-    )
+      "Form not found "
+    );
   };
 
   return (
@@ -72,7 +100,7 @@ const FormModal = ({
           <div className="bg-white p-4 rounded-md relative w-[90%] md:w-[70%] lg:w-[60%] xl:w-[50%] 2xl:w-[40%]">
             {/* Modal content */}
             <div>
-            <Form/>
+              <Form />
             </div>
             {/* Close button */}
             <div

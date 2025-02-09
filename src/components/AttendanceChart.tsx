@@ -38,19 +38,19 @@ const AttendanceChart = () => {
         <h1 className="text-lg font-bold">Attendance</h1>
         <Ellipsis className="cursor-pointer text-black" />
       </div>
-      <ResponsiveContainer width="100%" height="100%" >
+      <ResponsiveContainer >
         <BarChart
           width={500}
           height={300}
           data={data}
-          barSize={13}
+          barSize={10}
           margin={{ top: 50, bottom: 12 }} 
          
         >
           <CartesianGrid strokeDasharray="3 3" vertical={false} stroke='#ddd' />
           <XAxis dataKey="name" axisLine={false} tick={{fill: "#6b7280"}} tickLine={false}/>
           <YAxis axisLine={false}  tick={{fill: "#6b7280"}} tickLine={false}/>
-          <Tooltip contentStyle={{borderRadius:"10px" , borderColor:"lightgray"}} />
+          <Tooltip contentStyle={{borderRadius:"5px" , borderColor:"lightgray"}} />
           <Bar dataKey="present" fill="#60a5fa"  legendType='circle' radius={[10,10,0,0]} />
           <Bar dataKey="absent" fill="#f87171"   legendType='circle' radius={[10,10,0,0]}/>
         </BarChart>
