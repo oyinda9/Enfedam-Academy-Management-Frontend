@@ -57,6 +57,13 @@ const Menu = () => {
       link: "/list/lessons",
       visible: ["admin", "teacher"],
     },
+
+    {
+      label: "Subjects",
+      icon: <Book size={20} />,
+      link: "/list/subjects",
+      visible: ["admin", "teacher"],
+    },
     {
       label: "Classes",
       icon: <School size={20} />,

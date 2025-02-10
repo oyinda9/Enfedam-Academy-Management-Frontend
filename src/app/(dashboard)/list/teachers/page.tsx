@@ -12,7 +12,6 @@ import { Subjects } from "react-hook-form";
 import prisma from "@/lib/prisma";
 import { ITEM_PER_PAGE } from "@/lib/settings";
 
-
 type TeacherList = Teacher & { subjects: Subjects[] } & {
   lessons: Lesson[];
 } & {

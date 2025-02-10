@@ -20,26 +20,26 @@ const data = [
     name: "Boys",
     count: 60,
 
-    fill: "#83a6ed",
+    fill: "#5fa0cb",
   },
 ];
 
 const CountChart = () => {
   return (
-    <div className="bg-white  rounded-xl w-full h-full p-4 shadow-md ">
+    <div className="bg-white  rounded-xl w-full h-[90%] p-4 shadow-md ">
       {/* TITLE */}
       <div className="flex justify-between items-center">
         <h1 className="text-lg font-bold">Students</h1>
         <Ellipsis className="cursor-pointer text-black" />
       </div>
       {/* CHARTS */}
-      <div className="relative w-full h-[75%]">
+      <div className="relative w-full h-[60%]">
         <ResponsiveContainer>
           <RadialBarChart
             cx="50%"
             cy="50%"
-            innerRadius="40%"
-            outerRadius="100%"
+            innerRadius="50%"
+            outerRadius="90%"
             barSize={20}
             data={data}
           >
@@ -66,9 +66,9 @@ const CountChart = () => {
         </div>
       </div>
       {/* BOTTOM */}
-      <div className="flex justify-center gap-16">
+      <div className="flex justify-center gap-16 ">
         {/* Boys Section */}
-        <div className="flex flex-col items-center gap-2">
+        <div className="flex flex-col items-center gap-2 ">
           {/* Circle for Boys */}
           <div className="w-6 h-6 bg-red-500 rounded-full flex items-center justify-center"></div>
           {/* Number Outside Circle */}
@@ -79,9 +79,9 @@ const CountChart = () => {
         {/* Girls Section */}
         <div className="flex flex-col items-center gap-2">
           {/* Circle for Girls */}
-          <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center"></div>
+          <div className="w-6 h-6 bg-[#5fa0cb] rounded-full flex items-center justify-center"></div>
           {/* Number Outside Circle */}
-          <h1 className="font-bold text-blue-500">1,233</h1>
+          <h1 className="font-bold text-[#5fa0cb]">1,233</h1>
           <h2 className="text-sm text-center">Boys (45%)</h2>
         </div>
       </div>

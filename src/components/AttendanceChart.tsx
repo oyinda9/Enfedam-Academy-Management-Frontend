@@ -33,18 +33,19 @@ const data = [
 
 const AttendanceChart = () => {
   return (
-    <div className='bg-white rounded-lg p-4 h-[450px] w-full shadow-md'>
+    <div className='bg-white rounded-lg p-4 h-[90%] w-full shadow-md'>
       <div className="flex justify-between items-center">
-        <h1 className="text-lg font-bold">Attendance</h1>
+        <h1 className="text-lg font-semibold">Attendance</h1>
         <Ellipsis className="cursor-pointer text-black" />
       </div>
       <ResponsiveContainer >
         <BarChart
-          width={500}
+          width={100}
           height={300}
           data={data}
           barSize={10}
           margin={{ top: 50, bottom: 12 }} 
+          className='text-sm'
          
         >
           <CartesianGrid strokeDasharray="3 3" vertical={false} stroke='#ddd' />

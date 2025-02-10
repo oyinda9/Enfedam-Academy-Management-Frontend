@@ -5,12 +5,11 @@ import { Filter, ArrowDownNarrowWide, Plus } from "lucide-react";
 import Pagination from "@/components/Pagination";
 import Table from "@/components/Table";
 import Link from "next/link";
-import { role, subjectsData } from "../../../../lib/data";
-type Subject = {
-  id: number;
-  name: string;
-  teachers: string[];
-};
+import { role } from "../../../../lib/data";
+import { Prisma, Subject, Teacher } from "@prisma/client";
+import prisma from "@/lib/prisma";
+import { ITEM_PER_PAGE } from "@/lib/settings";
+type subjectList = Subject & { teachers: Teacher[] };
 const columns = [
   {
     headers: "Suject Name",
@@ -28,36 +27,91 @@ const columns = [
     accessor: "action",
   },
 ];
-const SubjectListPage = () => {
-  const renderRow = (item: Subject) => (
-    <tr
-      key={item.id}
-      className="border-b border-blue-100 even:bg-slate-100 text-sm hover:bg-red-50"
-    >
-      <td className="flex items-center gap-4 p-4">
-        <div className="flex flex-col">
-          <h3 className="flex-semibold">{item.name}</h3>
-        </div>
-      </td>
-      <td className="hidden md:table-cell">{item.teachers.join(",")}</td>
+const renderRow = (item: subjectList) => (
+  <tr
+    key={item.id}
+    className="border-b border-blue-100 even:bg-slate-100 text-sm hover:bg-red-50"
+  >
+    <td className="flex items-center gap-4 p-4">
+      <div className="flex flex-col">
+        <h3 className="flex-semibold">{item.name}</h3>
+      </div>
+    </td>
+    <td className="hidden md:table-cell">
+      {item.teachers?.length
+        ? item.teachers.map((teacherItem) => teacherItem.name).join(" ,")
+        : "No class name"}
+    </td>
 
-      <td>
-        <div className="flex items-center gap-2 self-end">
-          <Link href={`/list/teachers/${item.id}`}>
-            <button className="w-7 h-7 flex items-center justify-center rounded-full bg-blue-200">
-              <View width={16} />
-            </button>
-          </Link>
+    <td>
+      <div className="flex items-center gap-2 self-end">
+        <Link href={`/list/teachers/${item.id}`}>
+          <button className="w-7 h-7 flex items-center justify-center rounded-full bg-blue-200">
+            <View width={16} />
+          </button>
+        </Link>
 
-          {role === "admin" && (
-            <button className="w-7 h-7 flex items-center justify-center rounded-full bg-red-200">
-              <Trash2 width={16} />
-            </button>
-          )}
-        </div>
-      </td>
-    </tr>
-  );
+        {role === "admin" && (
+          <button className="w-7 h-7 flex items-center justify-center rounded-full bg-red-200">
+            <Trash2 width={16} />
+          </button>
+        )}
+      </div>
+    </td>
+  </tr>
+);
+const SubjectListPage = async ({
+  searchParams,
+}: {
+  searchParams: { [key: string]: string } | undefined;
+}) => {
+  const { page, ...queryParams } = searchParams;
+  const p = page ? parseInt(page) : 1;
+
+  // URL QUERY PARAMS RULES
+  const query: Prisma.SubjectWhereInput = {}; // Initialize the query object
+
+  if (queryParams) {
+    for (const [key, value] of Object.entries(queryParams)) {
+      if (value !== undefined) {
+        switch (key) {
+          case "classId": {
+            query.lessons = {
+              some: {
+                classId: parseInt(value, 10),
+              },
+            };
+            break;
+          }
+          case "search": {
+            query.name = {
+              contains: value,
+              mode: "insensitive",
+            };
+            break;
+          }
+        }
+      }
+    }
+  }
+
+  // Execute Prisma transaction for fetching data and count
+  const [data, count] = await prisma.$transaction([
+    prisma.subject.findMany({
+      where: query,
+      include: {
+        teachers: true,
+      },
+      take: ITEM_PER_PAGE,
+      skip: ITEM_PER_PAGE * (p - 1),
+    }),
+    prisma.subject.count({
+      where: query,
+    }),
+  ]);
+
+  // console.log(count);
+  console.log(searchParams);
 
   return (
     <div className="bg-white p-4 rounded-md flex-1 mt-0">
@@ -85,11 +139,10 @@ const SubjectListPage = () => {
       </div>
       {/* LIST */}
       <div className="">
-        <Table columns={columns} renderRow={renderRow} data={subjectsData} />
+        <Table columns={columns} renderRow={renderRow} data={data} />
       </div>
       {/* PAGINATION */}
-
-      <Pagination />
+      <Pagination page={p} count={count} />
     </div>
   );
 };

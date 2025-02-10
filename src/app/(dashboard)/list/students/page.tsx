@@ -97,9 +97,9 @@ const renderRow = (item: StudentList) => (
 const StudentListPage = async ({
   searchParams,
 }: {
-  searchParams?: { [key: string]: string  } | undefined;
+  searchParams?: { [key: string]: string } | undefined;
 }) => {
-  const { page, ...queryParams } = searchParams ??{} ;
+  const { page, ...queryParams } = searchParams ?? {};
   const p = page ? parseInt(page) : 1;
 
   // URL QUERY PARAMS RULES

@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import Announcements from "@/components/Announcements";
 import AttendanceChart from "@/components/AttendanceChart";
 import CountChart from "@/components/CountChart";
@@ -11,7 +11,7 @@ const Adminpage = () => {
   return (
     <div className="p-4 flex gap-4 flex-col md:flex-row font-poppins">
       {/* LEFT */}
-      <div className="w-full lg:w-2/3 flex flex-col gap-8">
+      <div className="w-full lg:w-2/3 flex flex-col gap-12">
         {/* USER CARDS */}
         <div className="flex flex-wrap justify-center sm:justify-between gap-4">
           <UserCard type="student" />
@@ -34,7 +34,7 @@ const Adminpage = () => {
         </div>
 
         {/* BOTTOM CHARTS */}
-        <div className="w-full h-[550px]">
+        <div className="w-full h-[550px] mt-[-20px]">
           <FinanceChart />
         </div>
       </div>

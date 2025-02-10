@@ -6,17 +6,17 @@ import { View, Trash2, Plus, X } from "lucide-react";
 // import StudentForm from "./forms/StudentForm";
 import dynamic from "next/dynamic";
 
-const TeacherForm =dynamic(()=> import ("./forms/TeacherForm"),{
-    loading:()=><h1>Loading .....</h1>,
+const TeacherForm = dynamic(() => import("./forms/TeacherForm"), {
+  loading: () => <h1>Loading .....</h1>,
 });
 
-const StudentForm =dynamic(()=> import ("./forms/StudentForm"),{
-    loading:()=><h1>Loading .....</h1>,
-})
+const StudentForm = dynamic(() => import("./forms/StudentForm"), {
+  loading: () => <h1>Loading .....</h1>,
+});
 
-const ParentForm =dynamic(()=> import ("./forms/ParentForm"),{
-    loading:()=><h1>Loading .....</h1>,
-})
+const ParentForm = dynamic(() => import("./forms/ParentForm"), {
+  loading: () => <h1>Loading .....</h1>,
+});
 
 const forms: {
   [key: string]: (type: "create" | "update", data?: any) => JSX.Element;

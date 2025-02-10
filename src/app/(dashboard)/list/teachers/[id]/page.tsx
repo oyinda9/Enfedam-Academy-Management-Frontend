@@ -25,7 +25,7 @@ const SingleTeacherPage = () => {
         {/* TOP ROW: User Info and Performance */}
         <div className="flex flex-col lg:flex-row gap-4">
           {/* USER INFO CARD */}
-          <div className="bg-blue-100 py-6 px-4 rounded-md flex gap-4 flex-1">
+          <div className="bg-blue-100 py-4 px-4 rounded-md flex gap-4 flex-1 ">
             {/* PROFILE IMAGE */}
             <div className="w-1/3">
               <Image
@@ -33,34 +33,37 @@ const SingleTeacherPage = () => {
                 alt="Teacher profile"
                 width={144}
                 height={144}
-                className="w-36 h-36 rounded-full object-cover"
+                className="w-20 h-20 rounded-full object-cover"
               />
             </div>
 
             {/* USER DETAILS */}
-            <div className="w-[90%] flex flex-col justify-between gap-4">
-              <h1 className="text-xl font-semibold">Sholanke Precious</h1>
-              <div className="flex items-center font-semibold gap-4">
-              <FormModal
-                table="teacher"
-                type="update"
-                data={{
-                  id: 1,
-                  username: "john_doe123", // Minimum 3, maximum 20 characters
-                  email: "john.doe@example.com", // Valid email format
-                  password: "password123", // Minimum 8 characters
-                  firstName: "John", // Required
-                  lastName: "Doe", // Required
-                  phone: "1234567890", // Required
-                  address: "123 Main Street, Springfield", // Required
-                  bloodtype: "O+", // Required
-                  birthday: "1990-01-01", // Required
-                  sex: "male", // Enum: "male" or "female"
-                  img: new File(["dummy content"], "profile.jpg", {
-                    type: "image/jpeg",
-                  }), // Required file instance
-                }}
-              />
+            <div className="w-[100%] flex flex-col justify-between gap-4  ">
+              <div className="flex">
+                {" "}
+                <h1 className="text-xl font-semibold">Sholanke Precious</h1>
+                <div className="flex items-center font-semibold gap-4 ml-6">
+                  <FormModal
+                    table="teacher"
+                    type="update"
+                    data={{
+                      id: 1,
+                      username: "john_doe123", // Minimum 3, maximum 20 characters
+                      email: "john.doe@example.com", // Valid email format
+                      password: "password123", // Minimum 8 characters
+                      firstName: "John", // Required
+                      lastName: "Doe", // Required
+                      phone: "1234567890", // Required
+                      address: "123 Main Street, Springfield", // Required
+                      bloodtype: "O+", // Required
+                      birthday: "1990-01-01", // Required
+                      sex: "male", // Enum: "male" or "female"
+                      img: new File(["dummy content"], "profile.jpg", {
+                        type: "image/jpeg",
+                      }), // Required file instance
+                    }}
+                  />
+                </div>
               </div>
               <p className="text-sm text-gray-500">
                 Lorem ipsum dolor sit amet consectetur, adipisicing elit.
@@ -69,37 +72,39 @@ const SingleTeacherPage = () => {
 
               {/* SMALL INFO GRID */}
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-4 text-xs font-medium">
+              <div className="grid grid-cols-1 md:grid-cols-2 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2  text-xs font-medium">
                 {/* First Row */}
-                <div className="flex items-center gap-2">
-                  <Droplet width={16} height={16} />
-                  <span>A+</span>
-                </div>
+                <div className="flex justify-between flex-col">
+                  <div className="flex items-center gap-2">
+                    <Droplet width={16} height={16} />
+                    <span>A+</span>
+                  </div>
 
-                <div className="flex items-center gap-2">
-                  <CalendarFold width={16} height={16} />
-                  <span>January 2025</span>
-                </div>
+                  <div className="flex items-center gap-2">
+                    <CalendarFold width={16} height={16} />
+                    <span>January 2025</span>
+                  </div>
 
-                {/* Second Row */}
-                <div className="flex items-center gap-2">
-                  <Phone width={16} height={16} />
-                  <span>99007677899</span>
-                </div>
+                  {/* Second Row */}
+                  <div className="flex items-center gap-2">
+                    <Phone width={16} height={16} />
+                    <span>99007677899</span>
+                  </div>
 
-                <div className="flex items-center gap-2">
-                  <Mail width={16} height={16} />
-                  <span>user@gmail.com</span>
+                  <div className="flex items-center gap-2">
+                    <Mail width={16} height={16} />
+                    <span>user@gmail.com</span>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
 
           {/* PERFORMANCE CARD */}
-          <div className=" grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-4 text-xs font-medium">
+          <div className=" grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-4 text-xs font-medium ">
             {/* Attendance */}
 
-            <div className="flex items-center justify-between  bg-white p-2 rounded-md">
+            <div className="flex items-center justify-between  bg-white p-2 rounded-md ">
               <div className="flex items-center gap-3">
                 <div className="bg-blue-200 p-2 rounded-full">
                   <CheckCircle className="text-blue-600" />
@@ -168,15 +173,24 @@ const SingleTeacherPage = () => {
         <div className="bg-white p-4 rounded-md">
           <h1>Shortcuts</h1>
           <div className="mt-4 flex gap-4 flex-wrap text-sm text-gray-800">
-            <Link className="p-3 rounded-md bg-blue-200" href="/">
+            <Link
+              className="p-3 rounded-md bg-blue-200"
+              href={`/list/classes?supervisorId=${"teacher2"}`}
+            >
               {" "}
               Teacher&apos;s Classes
             </Link>
-            <Link className="p-3 rounded-md bg-pink-200" href={`/list/students?teacher=${"teacher2"}`}>
+            <Link
+              className="p-3 rounded-md bg-pink-200"
+              href={`/list/students?teacher=${"teacher2"}`}
+            >
               {" "}
               Teacher&apos;s Students
             </Link>
-            <Link className="p-3 rounded-md bg-yellow-200" href="/">
+            <Link
+              className="p-3 rounded-md bg-yellow-200"
+              href={`/list/classes?teacherId=${"teacher2"}`}
+            >
               {" "}
               Teacher&apos;s Lessons
             </Link>
