@@ -10,7 +10,7 @@ import FormModal from "@/components/FormModal";
 import prisma from "@/lib/prisma";
 import { Class, Lesson, Prisma, Subject } from "@prisma/client";
 import { ITEM_PER_PAGE } from "@/lib/settings";
-type LessonsList =  Lesson & {subjects :Subject[] }  & {class :Class[]}
+type LessonsList = Lesson & { subjects: Subject[] } & { class: Class[] };
 const columns = [
   {
     headers: "Subject",
@@ -42,7 +42,9 @@ const renderRow = (item: LessonsList) => (
       </div>
     </td>
     <td className="hidden md:table-cell">{item.class.name}</td>
-    <td className="hidden md:table-cell">{item.teacher.name +  " "+ item.teacher.surname}</td>
+    <td className="hidden md:table-cell">
+      {item.teacher.name + " " + item.teacher.surname}
+    </td>
 
     <td>
       <div className="flex items-center gap-2 self-end">
@@ -82,11 +84,33 @@ const LessonListPage = async ({
     for (const [key, value] of Object.entries(queryParams)) {
       if (value !== undefined) {
         switch (key) {
+          case "classId": {
+            query.classId = parseInt(value);
+            break;
+          }
+          case "teacherId": {
+            query.teacherId = value;
+            break;
+          }
           case "search": {
-            query.name = {
-              contains: value,
-              mode: "insensitive",
-            };
+            query.OR = [
+              {
+                subject: {
+                  name: {
+                    contains: value,
+                    mode: "insensitive",
+                  },
+                },
+              },
+              {
+                teacher: {
+                  name: {
+                    contains: value,
+                    mode: "insensitive",
+                  },
+                },
+              },
+            ];
             break;
           }
         }
@@ -99,11 +123,9 @@ const LessonListPage = async ({
     prisma.lesson.findMany({
       where: query,
       include: {
-        subject: {select:{name:true}},
-        class:{select:{name:true}},
-        teacher:{select:{name:true ,surname:true}}
-        
-        
+        subject: { select: { name: true } },
+        class: { select: { name: true } },
+        teacher: { select: { name: true, surname: true } },
       },
       take: ITEM_PER_PAGE,
       skip: ITEM_PER_PAGE * (p - 1),

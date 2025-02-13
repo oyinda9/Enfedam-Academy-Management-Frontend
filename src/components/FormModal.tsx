@@ -18,12 +18,14 @@ const ParentForm = dynamic(() => import("./forms/ParentForm"), {
   loading: () => <h1>Loading .....</h1>,
 });
 
+
 const forms: {
-  [key: string]: (type: "create" | "update", data?: any) => JSX.Element;
+  [key: string]: (type: "create" | "update", data?: unknown) => JSX.Element;
 } = {
   teacher: (type, data) => <TeacherForm type={type} data={data} />,
   student: (type, data) => <StudentForm type={type} data={data} />,
   parent: (type, data) => <ParentForm type={type} data={data} />,
+ 
 };
 const FormModal = ({
   table,
@@ -45,7 +47,7 @@ const FormModal = ({
     | "event"
     | "announcement";
   type: "create" | "update" | "delete";
-  data: unknown;
+  data?: unknown;
   id?: number | string;
 }) => {
   const size =

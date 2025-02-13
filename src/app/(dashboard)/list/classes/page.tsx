@@ -99,8 +99,8 @@ const ClassesListPage =  async ({
     }),
   ]);
 
-  // console.log(count);
-  console.log(searchParams);
+  // // console.log(count);
+  // console.log(searchParams);
   const renderRow = (item: ClassesList
   ) => (
     <tr
