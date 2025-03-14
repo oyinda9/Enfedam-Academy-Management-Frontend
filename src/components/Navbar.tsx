@@ -1,9 +1,19 @@
+"use client";
+import { useState } from "react";
 import React from "react";
+import { useRouter } from "next/navigation";
 import { Search, MessageCircle, Megaphone, UserCircle } from "lucide-react";
 
 const Navbar = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const router = useRouter();
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    router.push("/"); // Redirect to login page
+  };
   return (
-    <div className="flex items-center justify-between">
+    <div className="flex items-center justify-between mr-6">
       {/* SEARCH BAR */}
       <div className="hidden md:flex mt-6">
         <div className="relative w-full mx-4">
@@ -41,8 +51,41 @@ const Navbar = () => {
             <span className="font-medium text-gray-800">Sholanke Precious</span>
             <span className="text-xs text-gray-400">Admin</span>
           </div>
-          <div>
-            <UserCircle size={26} className="text-gray-500 mr-6 cursor-pointer" />
+          <div className="relative">
+            {/* User Icon */}
+            <div
+              onClick={() => setIsOpen(!isOpen)}
+              className="cursor-pointer relative flex items-center"
+            >
+              <UserCircle size={26} className="text-gray-500" />
+            </div>
+
+            {/* Dropdown */}
+            {isOpen && (
+              <div className="absolute right-0 mt-2 w-[300px] bg-white shadow-lg rounded-lg border z-10">
+                <ul className="py-2 text-gray-700">
+                  <li>
+                    <a
+                      href="/profile"
+                      className="block px-4 py-2 hover:bg-gray-100"
+                    >
+                      Profile
+                    </a>
+                  </li>
+                  <li>
+                    <button
+                      onClick={handleLogout}
+                      className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                    >
+                      Logout
+                    </button>
+                  </li>
+                </ul>
+                <div className="border-t px-4 py-4 text-xs text-gray-500 text-center">
+                  Powered by Enfedam Academy
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
