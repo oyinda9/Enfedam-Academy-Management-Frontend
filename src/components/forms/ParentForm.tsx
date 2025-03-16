@@ -47,7 +47,7 @@ const ParentForm = ({
   return (
     <form className="p-6" onSubmit={onSubmit}>
       {/* Title */}
-      <h1 className="text-xl font-semibold mb-6">CREATE NEW STUDENT</h1>
+      <h1 className="text-xl font-semibold mb-6">CREATE NEW PARENT</h1>
 
       {/* Section: Authentication Information */}
       <p className="text-lg font-medium mb-4">Authentication Information</p>

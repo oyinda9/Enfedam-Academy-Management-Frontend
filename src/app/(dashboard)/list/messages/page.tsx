@@ -5,13 +5,21 @@ import { Filter, ArrowDownNarrowWide, Plus } from "lucide-react";
 import Pagination from "@/components/Pagination";
 import Table from "@/components/Table";
 import Link from "next/link";
-import { announcementsData, role } from "../../../../lib/data";
-type Message = {
+import { role } from "../../../../lib/data";
+interface announcementsData {
   id: number;
   title: string;
-
   date: string;
-};
+}
+
+// Dummy Data
+const dummyAnnouncements: announcementsData[] = [
+  {
+    id: 1,
+    title: "John Doe",
+    date: "john@example.com",
+  },
+];
 const columns = [
   {
     headers: "Title",
@@ -30,7 +38,7 @@ const columns = [
   },
 ];
 const MessagesListPage = () => {
-  const renderRow = (item: Message) => (
+  const renderRow = (item: announcementsData) => (
     <tr
       key={item.id}
       className="border-b border-blue-100 even:bg-slate-100 text-sm hover:bg-red-50"
@@ -90,12 +98,11 @@ const MessagesListPage = () => {
         <Table
           columns={columns}
           renderRow={renderRow}
-          data={announcementsData}
+          data={dummyAnnouncements}
         />
       </div>
       {/* PAGINATION */}
-
-      <Pagination />
+      <Pagination page={1} count={dummyAnnouncements.length} />
     </div>
   );
 };

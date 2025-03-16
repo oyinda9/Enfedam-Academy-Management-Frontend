@@ -1,6 +1,6 @@
-import React from "react";
+"use client";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { role } from "../lib/data";
 import {
   Home,
   User,
@@ -20,85 +20,94 @@ import {
 } from "lucide-react";
 
 const Menu = () => {
+  const [userRole, setUserRole] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Assuming you store user role in localStorage after login
+    const storedRole = localStorage.getItem("role");
+    if (storedRole) {
+      setUserRole(storedRole);
+    }
+  }, []);
+
   const mainMenuItems = [
     {
       label: "Home",
       icon: <Home size={20} />,
       link: "/",
-      visible: ["admin", "student", "parent", "teacher"],
+      visible: ["ADMIN", "STUDENT", "USER", "TEACHER"],
     },
     {
       label: "Teachers",
       icon: <User size={20} />,
       link: "/list/teachers",
-      visible: ["admin"],
+      visible: ["ADMIN"],
     },
     {
       label: "Parents",
       icon: <Users size={20} />,
       link: "/list/parents",
-      visible: ["admin", "teacher"],
+      visible: ["ADMIN", "TEACHER"],
     },
     {
       label: "Students",
       icon: <GraduationCap size={20} />,
       link: "/list/students",
-      visible: ["admin", "teacher", "parent"],
+      visible: ["ADMIN", "TEACHER", "USER"],
     },
     {
       label: "Exams",
       icon: <ClipboardList size={20} />,
       link: "/list/exams",
-      visible: ["admin", "student", "parent", "teacher"],
+      visible: ["ADMIN", "STUDENT", "USER", "TEACHER"],
     },
     {
       label: "Lessons",
       icon: <Book size={20} />,
       link: "/list/lessons",
-      visible: ["admin", "teacher"],
+      visible: ["ADMIN", "TEACHER"],
     },
-
     {
       label: "Subjects",
       icon: <Book size={20} />,
       link: "/list/subjects",
-      visible: ["admin", "teacher"],
+      visible: ["ADMIN", "TEACHER"],
     },
     {
       label: "Classes",
       icon: <School size={20} />,
       link: "/list/classes",
-      visible: ["admin", "teacher", "student"],
+      visible: ["ADMIN", "TEACHER", "STUDENT"],
     },
     {
       label: "Assignments",
       icon: <FileText size={20} />,
       link: "/list/assignments",
-      visible: ["admin", "student", "parent", "teacher"],
+      visible: ["ADMIN", "STUDENT", "TEACHER"],
     },
     {
       label: "Attendance",
       icon: <CheckCircle size={20} />,
       link: "/list/attendance",
-      visible: ["admin", "parent", "teacher"],
+      visible: ["ADMIN", "USER", "TEACHER"],
     },
     {
       label: "Result",
       icon: <Award size={20} />,
       link: "/list/results",
-      visible: ["admin", "parent", "teacher", "student"],
+      visible: ["ADMIN", "USER", "TEACHER", "STUDENT"],
     },
     {
       label: "Events",
       icon: <Calendar size={20} />,
       link: "/list/events",
-      visible: ["admin", "student", "parent", "teacher"],
+      visible: ["ADMIN", "STUDENT", "USER", "TEACHER"],
     },
     {
       label: "Messages",
       icon: <MessageSquare size={20} />,
       link: "/list/messages",
-      visible: ["admin", "student", "parent", "teacher"],
+      visible: ["ADMIN", "STUDENT", "USER", "TEACHER"],
     },
   ];
 
@@ -107,19 +116,19 @@ const Menu = () => {
       label: "Settings",
       icon: <Settings size={20} />,
       link: "/settings",
-      visible: ["admin", "student", "parent", "teacher"],
+      visible: ["ADMIN", "STUDENT", "TEACHER"],
     },
     {
       label: "Profile",
       icon: <UserCircle size={20} />,
       link: "/profile",
-      visible: ["admin", "student", "parent", "teacher"],
+      visible: ["ADMIN", "STUDENT", "USER", "TEACHER"],
     },
     {
       label: "Logout",
       icon: <LogOut size={20} />,
       link: "/logout",
-      visible: ["admin", "student", "parent", "teacher"],
+      visible: ["ADMIN", "STUDENT", "USER", "TEACHER"],
     },
   ];
 
@@ -129,7 +138,7 @@ const Menu = () => {
       <div>
         <ul className="space-y-4">
           {mainMenuItems.map((item) => {
-            if (item.visible.includes(role)) {
+            if (userRole && item.visible.includes(userRole)) {
               return (
                 <li key={item.label} className="flex flex-col gap-2">
                   <Link
@@ -152,7 +161,7 @@ const Menu = () => {
         <h2 className="text-lg font-bold mb-4">Account</h2>
         <ul className="space-y-4">
           {secondaryMenuItems.map((item) => {
-            if (item.visible.includes(role)) {
+            if (userRole && item.visible.includes(userRole)) {
               return (
                 <li
                   key={item.label}

@@ -1,17 +1,31 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import React from "react";
 import { useRouter } from "next/navigation";
 import { Search, MessageCircle, Megaphone, UserCircle } from "lucide-react";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [userName, setUserName] = useState("");
+  const [userRole, setUserRole] = useState("");
   const router = useRouter();
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+
+    if (storedUser) {
+      const userData = JSON.parse(storedUser);
+      setUserName(userData.name || ""); // Default to "User" if name is missing
+      setUserRole(userData.role || ""); // Default to "Admin" if role is missing
+    }
+  }, []);
+
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     router.push("/"); // Redirect to login page
   };
+
   return (
     <div className="flex items-center justify-between mr-6">
       {/* SEARCH BAR */}
@@ -28,6 +42,7 @@ const Navbar = () => {
           />
         </div>
       </div>
+
       {/* ICONS AND USERS */}
       <div className="flex items-center gap-8 mt-6">
         {/* Message Icon */}
@@ -48,8 +63,8 @@ const Navbar = () => {
         {/* User Info */}
         <div className="flex items-center gap-3">
           <div className="flex flex-col text-sm">
-            <span className="font-medium text-gray-800">Sholanke Precious</span>
-            <span className="text-xs text-gray-400">Admin</span>
+            <span className="font-medium text-gray-800">{userName}</span>
+            <span className="text-xs text-gray-400">{userRole}</span>
           </div>
           <div className="relative">
             {/* User Icon */}

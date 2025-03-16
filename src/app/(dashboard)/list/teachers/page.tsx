@@ -6,17 +6,42 @@ import Link from "next/link";
 import TableSearch from "@/components/TableSearch";
 import FormModal from "@/components/FormModal";
 import { role } from "../../../../lib/data";
-import { Class, Lesson, Prisma, Teacher } from "@prisma/client";
 import Image from "next/image";
-import { Subjects } from "react-hook-form";
-import prisma from "@/lib/prisma";
-import { ITEM_PER_PAGE } from "@/lib/settings";
 
-type TeacherList = Teacher & { subjects: Subjects[] } & {
-  lessons: Lesson[];
-} & {
-  classes: Class[];
-};
+interface TeacherList {
+  id: number;
+  name: string;
+  email?: string;
+  phone?: string;
+  address?: string;
+  img?: string;
+  subjects?: { name: string }[];
+  classes?: { name: string }[];
+}
+
+// Dummy data
+const dummyTeachers: TeacherList[] = [
+  {
+    id: 1,
+    name: "John Doe",
+    email: "johndoe@example.com",
+    phone: "123-456-7890",
+    address: "123 Main St, City",
+    img: "",
+    subjects: [{ name: "Mathematics" }],
+    classes: [{ name: "Grade 10" }, { name: "Grade 11" }],
+  },
+  {
+    id: 2,
+    name: "Jane Smith",
+    email: "janesmith@example.com",
+    phone: "987-654-3210",
+    address: "456 Elm St, Town",
+    img: "",
+    subjects: [{ name: "Science" }],
+    classes: [{ name: "Grade 9" }],
+  },
+];
 
 const columns = [
   { headers: "Info", accessor: "info" },
@@ -51,7 +76,7 @@ const renderRow = (item: TeacherList) => (
           className="md:hidden xl:block rounded-full"
         />
       ) : (
-        <User className="w-8 h-8 rounded-full border border-gray-600  text-gray-500 md:hidden xl:block" />
+        <User className="w-8 h-8 rounded-full border border-gray-600 text-gray-500 md:hidden xl:block" />
       )}
       <div className="flex flex-col">
         <h3 className="font-semibold">{item.name}</h3>
@@ -61,15 +86,13 @@ const renderRow = (item: TeacherList) => (
     <td className="hidden md:table-cell">{item.id}</td>
     <td className="hidden md:table-cell">
       {item.subjects?.length
-        ? item.subjects
-            .map((subject) => subject?.name || "No subject name")
-            .join(" ,")
-        : "No subject name"}
+        ? item.subjects.map((s) => s.name).join(", ")
+        : "No subject"}
     </td>
     <td className="hidden md:table-cell">
       {item.classes?.length
-        ? item.classes.map((classItem) => classItem.name).join(" ,")
-        : "No class name"}
+        ? item.classes.map((c) => c.name).join(", ")
+        : "No class"}
     </td>
     <td className="hidden md:table-cell">{item.phone}</td>
     <td className="hidden lg:table-cell">{item.address}</td>
@@ -92,60 +115,11 @@ const renderRow = (item: TeacherList) => (
     </td>
   </tr>
 );
-const TeacherListPage = async ({
-  searchParams,
-}: {
-  searchParams: { [key: string]: string } | undefined;
-}) => {
-  const { page, ...queryParams } = searchParams;
-  const p = page ? parseInt(page) : 1;
 
-  // URL QUERY PARAMS RULES
-  const query: Prisma.TeacherWhereInput = {}; // Initialize the query object
-
-  if (queryParams) {
-    for (const [key, value] of Object.entries(queryParams)) {
-      if (value !== undefined) {
-        switch (key) {
-          case "classId": {
-            query.lessons = {
-              some: {
-                classId: parseInt(value, 10),
-              },
-            };
-            break;
-          }
-          case "search": {
-            query.name = {
-              contains: value,
-              mode: "insensitive",
-            };
-            break;
-          }
-        }
-      }
-    }
-  }
-
-  // Execute Prisma transaction for fetching data and count
-  const [data, count] = await prisma.$transaction([
-    prisma.teacher.findMany({
-      where: query,
-      include: {
-        subjects: true,
-        classes: true,
-        lessons: true,
-      },
-      take: ITEM_PER_PAGE,
-      skip: ITEM_PER_PAGE * (p - 1),
-    }),
-    prisma.teacher.count({
-      where: query,
-    }),
-  ]);
-
-  // console.log(count);
-  console.log(searchParams);
+const TeacherListPage = () => {
+  const data = dummyTeachers;
+  const count = data.length;
+  const p = 1; // Default page to 1 since it's dummy data
 
   return (
     <div className="bg-white p-4 rounded-md flex-1 mt-0">
