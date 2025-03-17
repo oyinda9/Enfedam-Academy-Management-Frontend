@@ -1,251 +1,191 @@
 "use client";
 import { z } from "zod";
-import React from "react";
-import { CloudUpload } from "lucide-react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { createTeacher } from "@/services/teacherServices";
 
+// Validation Schema
 const schema = z.object({
-  username: z
+  username: z.string().min(3, "Username must be at least 3 characters!"),
+  name: z.string().min(1, "First name is required!"),
+  surname: z.string().min(1, "Surname is required!"),
+  email: z.string().email("Invalid email address!"),
+  phone: z
     .string()
-    .min(3, { message: "Username must be at least 3 characters long!" })
-    .max(20, { message: "Username cannot exceed 20 characters!" }),
-  email: z.string().email({ message: "Invalid email address!" }),
-  password: z
-    .string()
-    .min(8, { message: "Password must be at least 8 characters long!" }),
-  firstName: z.string().min(1, { message: "First name is required!" }),
-  lastName: z.string().min(1, { message: "Last name is required!" }),
-  phone: z.string().min(1, { message: "Phone is required!" }),
-  address: z.string().min(1, { message: "Address is required!" }),
-  bloodtype: z.string().min(1, { message: "Blood  type is required!" }),
-
-  birthday: z.string().min(1, { message: "Birthday is required!" }),
-  sex: z.enum(["male", "female"], { message: "Sex is required!" }),
-  img: z.instanceof(File, { message: "Image is required!" }),
+    .regex(
+      /^\+234[789][01]\d{8}$|^0[789][01]\d{8}$/,
+      "Invalid Nigerian phone number!"
+    ),
+  address: z.string().min(1, "Address is required!"),
+  bloodType: z.string().min(1, "Blood type is required!"),
+  sex: z.enum(["MALE", "FEMALE"], { message: "Select a valid gender!" }),
+  birthday: z.string().min(1, "Birthday is required!"),
+  subjectIds: z.array(z.number()).min(1, "Select at least one subject!"),
+  lessonIds: z.array(z.number()).min(1, "Select at least one lesson!"),
+  classIds: z.array(z.number()).min(1, "Select at least one class!"),
+  img: z.string().optional(),
 });
 
-const TeacherForm = ({
-  type,
-  data,
-}: {
-  type: "create" | "update";
-  data?: any;
-}) => {
+type FormData = z.infer<typeof schema>;
+
+const TeacherForm = () => {
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
-  } = useForm({
+  } = useForm<FormData>({
     resolver: zodResolver(schema),
+    defaultValues: {
+      username: "",
+      name: "",
+      surname: "",
+      email: "",
+      phone: "",
+      address: "",
+      bloodType: "",
+      sex: undefined,
+      birthday: "",
+      subjectIds: [],
+      lessonIds: [],
+      classIds: [],
+      img: "",
+    },
   });
 
-  const onSubmit = handleSubmit((data) => {
-    console.log(data); // Handle form submission logic
+  const [preview, setPreview] = useState<string | null>(null);
+
+  // Handle form submission
+  const onSubmit = handleSubmit(async (formData) => {
+    try {
+      const result = await createTeacher(formData);
+      alert("Teacher created successfully!");
+    } catch (error) {
+      alert("Failed to create teacher.");
+    }
   });
+
+  // Handle Image Upload
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const imageUrl = URL.createObjectURL(file);
+      setPreview(imageUrl);
+      setValue("img", imageUrl);
+    }
+  };
+
+  // Handle Multi-Select Inputs
+  const handleMultiSelect = (
+    event: React.ChangeEvent<HTMLSelectElement>,
+    field: keyof FormData
+  ) => {
+    const values = Array.from(event.target.selectedOptions).map((opt) =>
+      Number(opt.value)
+    );
+    setValue(field, values);
+  };
 
   return (
-    <form className="p-6" onSubmit={onSubmit}>
-      {/* Title */}
-      <h1 className="text-xl font-semibold mb-6">CREATE NEW TEACHER</h1>
+    <form
+      onSubmit={onSubmit}
+      className="w-[600px] h-[400px] mx-auto p-4 bg-gray-50 shadow-md rounded-lg overflow-y-auto"
+    >
+      <h1 className="text-xl font-bold mb-4 text-center text-gray-800">
+        Register Teacher
+      </h1>
 
-      {/* Section: Authentication Information */}
-      <p className="text-lg font-medium mb-4">Authentication Information</p>
-      <div className="grid grid-cols-3 gap-6 mb-6">
-        {/* Username */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Username
-          </label>
-          <input
-            type="text"
-            {...register("username")}
-            className="ring-1 ring-gray-600 p-2 rounded-md text-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <p className="text-xs text-red-600">
-            {errors.username?.message?.toString()}
-          </p>
-        </div>
+      <div className="grid grid-cols-2 gap-4">
+        {[
+          { label: "Username", name: "username" },
+          { label: "Email", name: "email" },
+          { label: "First Name", name: "name" },
+          { label: "Surname", name: "surname" },
+          { label: "Phone", name: "phone" },
+          { label: "Address", name: "address" },
+          { label: "Blood Type", name: "bloodType" },
+          { label: "Birthday", name: "birthday", type: "date" },
+        ].map(({ label, name, type = "text" }) => (
+          <div key={name}>
+            <label className="block text-xs font-medium text-gray-600">
+              {label}
+            </label>
+            <input
+              type={type}
+              {...register(name as keyof FormData)}
+              className="border p-2 w-full rounded text-gray-700"
+            />
+            <p className="text-red-600 text-xs">{errors[name]?.message}</p>
+          </div>
+        ))}
 
-        {/* Email */}
         <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Email
-          </label>
-          <input
-            type="email"
-            {...register("email")}
-            className="ring-1 ring-gray-600 p-2 rounded-md text-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <p className="text-xs text-red-600">
-            {errors.email?.message?.toString()}
-          </p>
-        </div>
-
-        {/* Password */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Password
-          </label>
-          <input
-            type="password"
-            {...register("password")}
-            className="ring-1 ring-gray-600 p-2 rounded-md text-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <p className="text-xs text-red-600">
-            {errors.password?.message?.toString()}
-          </p>
-        </div>
-      </div>
-
-      {/* Section: Personal Information */}
-      <p className="text-lg font-medium mb-4">Personal Information</p>
-      <div className="grid grid-cols-3 gap-6 mb-6">
-        {/* First Name */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700">
-            First Name
-          </label>
-          <input
-            type="text"
-            {...register("firstName")}
-            className="ring-1 ring-gray-600 p-2 rounded-md text-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <p className="text-xs text-red-600">
-            {errors.firstName?.message?.toString()}
-          </p>
-        </div>
-
-        {/* Last Name */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Last Name
-          </label>
-          <input
-            type="text"
-            {...register("lastName")}
-            className="ring-1 ring-gray-600 p-2 rounded-md text-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <p className="text-xs text-red-600">
-            {errors.lastName?.message?.toString()}
-          </p>
-        </div>
-
-        {/* Phone */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Phone
-          </label>
-          <input
-            type="text"
-            {...register("phone")}
-            className="ring-1 ring-gray-600 p-2 rounded-md text-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <p className="text-xs text-red-600">
-            {errors.phone?.message?.toString()}
-          </p>
-        </div>
-
-        {/* Address */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Address
-          </label>
-          <input
-            type="text"
-            {...register("address")}
-            className="ring-1 ring-gray-600 p-2 rounded-md text-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <p className="text-xs text-red-600">
-            {errors.address?.message?.toString()}
-          </p>
-        </div>
-
-        {/* Birthday */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Birthday
-          </label>
-          <input
-            type="date"
-            {...register("birthday")}
-            className="ring-1 ring-gray-600 p-2 rounded-md text-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <p className="text-xs text-red-600">
-            {errors.birthday?.message?.toString()}
-          </p>
-        </div>
-
-        {/* Sex */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Sex</label>
+          <label className="block text-xs font-medium text-gray-600">Sex</label>
           <select
             {...register("sex")}
-            className="ring-1 ring-gray-600 p-2 rounded-md text-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="border p-2 w-full rounded text-gray-700"
           >
             <option value="">Select</option>
-            <option value="male">Male</option>
-            <option value="female">Female</option>
+            <option value="MALE">Male</option>
+            <option value="FEMALE">Female</option>
           </select>
-          <p className="text-xs text-red-600">
-            {errors.sex?.message?.toString()}
-          </p>
+          <p className="text-red-600 text-xs">{errors.sex?.message}</p>
         </div>
+      </div>
 
-        {/* Blood Type */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Blood Type
-          </label>
-          <select
-            {...register("bloodType")}
-            className="ring-1 ring-gray-600 p-2 rounded-md text-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            <option value="">Select</option>
-            <option value="A+">A+</option>
-            <option value="A-">A-</option>
-            <option value="B+">B+</option>
-            <option value="B-">B-</option>
-            <option value="O+">O+</option>
-            <option value="O-">O-</option>
-            <option value="AB+">AB+</option>
-            <option value="AB-">AB-</option>
-          </select>
-          <p className="text-xs text-red-600">
-            {errors.bloodType?.message?.toString()}
-          </p>
-        </div>
-
-        {/* Profile Image */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Profile Image
-          </label>
-          <div className="flex gap-2">
-            <input
-              type="file"
-              id="img"
-              {...register("img")}
-              className="ring-1 ring-gray-600 p-2 rounded-md text-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <CloudUpload className="rounded-md" />
+      {/* Multi-Select Inputs for Numbers */}
+      <div className="grid grid-cols-3 gap-4 mt-4 h-[500px]">
+        {[
+          { label: "Subjects", name: "subjectIds", options: { 1: "Math" } },
+          { label: "Lessons", name: "lessonIds", options: { 1: "Lesson 1" } },
+          { label: "Classes", name: "classIds", options: { 1: "Class A" } },
+        ].map(({ label, name, options }) => (
+          <div key={name}>
+            <label className="block text-xs font-medium text-gray-600">
+              {label}
+            </label>
+            <select
+              multiple
+              className="border p-2 w-full rounded text-gray-700"
+              onChange={(e) => handleMultiSelect(e, name as keyof FormData)}
+            >
+              {Object.entries(options).map(([value, text]) => (
+                <option key={value} value={value}>
+                  {text}
+                </option>
+              ))}
+            </select>
+            <p className="text-red-600 text-xs">{errors[name]?.message}</p>
           </div>
-
-          <p className="text-xs text-red-600">
-            {errors.img?.message?.toString()}
-          </p>
-        </div>
+        ))}
       </div>
 
-      {/* Submit Button */}
       <div>
-        <button
-          type="submit"
-          className="bg-blue-700 text-white p-3 rounded-md hover:bg-blue-800 w-full"
-        >
-          {type === "create" ? "Create" : "Update"}
-        </button>
+        <label className="block text-xs font-medium text-gray-600">
+          Profile Image
+        </label>
+        <input
+          type="file"
+          accept="image/*"
+          onChange={handleFileChange}
+          className="border p-2 w-full rounded text-gray-700"
+        />
+        {preview && (
+          <img
+            src={preview}
+            alt="Preview"
+            className="w-14 h-14 mt-2 rounded-full"
+          />
+        )}
       </div>
+
+      <button
+        type="submit"
+        className="w-full bg-blue-600 text-white p-2 rounded-md hover:bg-blue-700 mt-4"
+      >
+        Register Teacher
+      </button>
     </form>
   );
 };

@@ -1,4 +1,6 @@
-import React from "react";
+"use client";
+
+import React, { useEffect, useState } from "react";
 import TableSearch from "@/components/TableSearch";
 import { Filter, ArrowDownNarrowWide } from "lucide-react";
 import Pagination from "@/components/Pagination";
@@ -6,7 +8,7 @@ import Table from "@/components/Table";
 import Link from "next/link";
 import { role } from "../../../../lib/data";
 import FormModal from "@/components/FormModal";
-
+import { getAllStudent } from "@/services/parentService";
 interface ParentList {
   id: number;
   name: string;
@@ -16,28 +18,6 @@ interface ParentList {
   students: { id: number; name: string }[];
 }
 
-// Dummy Data
-const dummyParents: ParentList[] = [
-  {
-    id: 1,
-    name: "John Doe",
-    email: "john@example.com",
-    phone: "123-456-7890",
-    address: "123 Main St, Cityville",
-    students: [
-      { id: 101, name: "Alice Doe" },
-      { id: 102, name: "Bob Doe" },
-    ],
-  },
-  {
-    id: 2,
-    name: "Jane Smith",
-    email: "jane@example.com",
-    phone: "987-654-3210",
-    address: "456 Oak St, Townsville",
-    students: [{ id: 103, name: "Charlie Smith" }],
-  },
-];
 
 const columns = [
   { headers: "Info", accessor: "info" },
@@ -45,8 +25,27 @@ const columns = [
   { headers: "Email", accessor: "email" },
   { headers: "Phone", accessor: "phone" },
   { headers: "Address", accessor: "address" },
+  { headers: "Action", accessor: "action" },
 ];
 
+const ParentListPage = () => {
+ const [parents, setParents] = useState<ParentList[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchParents = async () => {
+      try {
+        const data = await getAllStudent();
+        setParents(data);
+      } catch (error) {
+        console.error("Failed to load teachers", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchParents();
+  }, []);
+  
 const renderRow = (item: ParentList) => (
   <tr key={item.id} className="border-b border-blue-100 even:bg-slate-100 text-sm hover:bg-red-50">
     <td className="flex items-center gap-4 p-4">
@@ -75,8 +74,8 @@ const renderRow = (item: ParentList) => (
     </td>
   </tr>
 );
-
-const ParentListPage = () => {
+if (loading) return <p>Loading parents...</p>;
+  if (parents.length === 0) return <p>No parents found.</p>;
   return (
     <div className="bg-white p-4 rounded-md flex-1 mt-0">
       {/* TOP */}
@@ -98,11 +97,11 @@ const ParentListPage = () => {
 
       {/* LIST */}
       <div>
-        <Table columns={columns} renderRow={renderRow} data={dummyParents} />
+        <Table columns={columns} renderRow={renderRow} data={parents} />
       </div>
 
       {/* PAGINATION (Dummy - Replace with real logic if needed) */}
-      <Pagination page={1} count={dummyParents.length} />
+      <Pagination page={1} count={parents.length} />
     </div>
   );
 };
