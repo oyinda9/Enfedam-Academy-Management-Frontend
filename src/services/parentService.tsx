@@ -2,7 +2,7 @@ import axios from "axios";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5003/teachers";
 
-export const getAllStudent = async () => {
+export const getAllParent = async () => {
   try {
     const response = await axios.get(`${API_URL}/parents/`);
     return response.data;

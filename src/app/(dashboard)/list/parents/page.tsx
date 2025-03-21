@@ -8,7 +8,7 @@ import Table from "@/components/Table";
 import Link from "next/link";
 import { role } from "../../../../lib/data";
 import FormModal from "@/components/FormModal";
-import { getAllStudent } from "@/services/parentService";
+import { getAllParent } from "@/services/parentService";
 interface ParentList {
   id: number;
   name: string;
@@ -35,7 +35,7 @@ const ParentListPage = () => {
   useEffect(() => {
     const fetchParents = async () => {
       try {
-        const data = await getAllStudent();
+        const data = await getAllParent();
         setParents(data);
       } catch (error) {
         console.error("Failed to load teachers", error);

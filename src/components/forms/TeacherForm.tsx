@@ -90,7 +90,7 @@ const TeacherForm = () => {
   return (
     <form
       onSubmit={onSubmit}
-      className="w-[600px] h-[400px] mx-auto p-4 bg-gray-50 shadow-md rounded-lg overflow-y-auto"
+      className="w-[600px] h-[600px] mx-auto p-4 bg-white rounded-lg overflow-y-auto"
     >
       <h1 className="text-xl font-bold mb-4 text-center text-gray-800">
         Register Teacher
