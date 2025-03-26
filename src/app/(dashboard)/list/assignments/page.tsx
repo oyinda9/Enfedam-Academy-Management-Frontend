@@ -2,7 +2,7 @@ import React from "react";
 import { Filter, ArrowDownNarrowWide, Plus } from "lucide-react";
 import TableSearch from "@/components/TableSearch";
 import Table from "@/components/Table";
-import Pagination from "@/components/Pagination";
+// import Pagination from "@/components/Pagination";
 import { role } from "../../../../lib/data";
 
 const columns = [
@@ -80,7 +80,7 @@ const AssignmentListPage = () => {
       </div>
 
       {/* PAGINATION */}
-      <Pagination page={1} count={dummyData.length} />
+      {/* <Pagination page={1} count={dummyData.length} /> */}
     </div>
   );
 };
