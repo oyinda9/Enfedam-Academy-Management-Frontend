@@ -22,8 +22,8 @@ interface TeacherList {
   phone?: string;
   address?: string;
   img?: string;
-  subjects?: { name: string }[];
-  classes?: { name: string }[];
+  subjects?: { id: number; name: string }[];
+  classes?: { id: number; name: string }[];
 }
 const columns = [
   // { headers: "Info", accessor: "info" },
@@ -40,15 +40,11 @@ const columns = [
   // },
 
   {
-    headers: "Firstname",
-    accessor: "firstname",
+    headers: "Full-Name",
+    accessor: "fullname",
     className: "hidden lg:table-cell",
   },
-  {
-    headers: "Lastname",
-    accessor: "Lastname",
-    className: "hidden lg:table-cell",
-  },
+
 
   {
     headers: "Email",
@@ -90,10 +86,12 @@ const columns = [
   { headers: "Actions", accessor: "actions" },
 ];
 
-
+const ITEMS_PER_PAGE = 10; // Adjust number of items per page
 const TeacherListPage = () => {
   const [teachers, setTeachers] = useState<TeacherList[]>([]);
   const [loading, setLoading] = useState(true);
+  const [userRole, setUserRole] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     const fetchTeachers = async () => {
@@ -107,25 +105,39 @@ const TeacherListPage = () => {
       }
     };
     fetchTeachers();
+
+    const storedRole = localStorage.getItem("role");
+    if (storedRole) {
+      setUserRole(storedRole);
+    }
   }, []);
 
- 
+  // Calculate pagination
+  const totalPages = Math.ceil(teachers.length / ITEMS_PER_PAGE);
+  const paginatedTeachers = teachers.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
 
+  const handlePageChange = (newPage: number) => {
+    if (newPage >= 1 && newPage <= totalPages) {
+      setCurrentPage(newPage);
+    }
+  };
   const renderRow = (item: TeacherList) => (
     <tr
       key={item.id}
-      className="border-b border-blue-100 even:bg-slate-100 text-sm hover:bg-red-50"
+      className="border-b border-blue-100 even:bg-slate-100 text-sm hover:bg-red-50   "
     >
-      <td className="hidden lg:table-cell px-6 py-2">{item.name || "N/A"}</td>
-      <td className="hidden lg:table-cell px-6 py-2">
-        {item.surname || "N/A"}
+      <td className="hidden lg:table-cell px-2 py-2  items-start">
+        {`${item.name || "N/A"}  ${item.surname || "N/A"}`.trim()}
       </td>
-      <td className="hidden lg:table-cell px-6 py-2">{item.email || "N/A"}</td>
+      <td className="hidden lg:table-cell px-2 py-2">{item.email || "N/A"}</td>
       {/* <td className="hidden lg:table-cell px-4 py-2">
         {item.username || "N/A"}
       </td> */}
       {/* <td className="hidden lg:table-cell px-4 py-2">{item.id}</td> */}
-      <td className="hidden lg:table-cell px-6 py-2">
+      <td className="hidden lg:table-cell px-2 py-2">
         {item.subjects?.length
           ? item.subjects.map((s) => s.name).join(", ")
           : "N/A"}
@@ -135,6 +147,7 @@ const TeacherListPage = () => {
           ? item.classes.map((c) => c.name).join(", ")
           : "N/A"}
       </td>
+
       <td className="hidden lg:table-cell px-6 py-2">{item.phone || "N/A"}</td>
 
       <td className="hidden lg:table-cell px-6 py-2">
@@ -160,7 +173,7 @@ const TeacherListPage = () => {
               <View size={16} />
             </button>
           </Link>
-          {role === "admin" && (
+          {userRole === "ADMIN" && (
             <FormModal
               table="teacher"
               type="delete"
@@ -196,10 +209,15 @@ const TeacherListPage = () => {
       </div>
 
       {/* TABLE SECTION */}
-      <Table columns={columns} renderRow={renderRow} data={teachers} />
+      <Table columns={columns} renderRow={renderRow} data={paginatedTeachers} />
 
       {/* PAGINATION */}
-      <Pagination page={1} count={teachers.length} />
+      {/* PAGINATION */}
+      <Pagination
+        page={currentPage}
+        count={teachers.length}
+        onPageChange={handlePageChange}
+      />
     </div>
   );
 };

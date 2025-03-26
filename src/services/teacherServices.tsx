@@ -1,6 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import axios from "axios";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5003/teachers";
+const API_URL =
+  process.env.NEXT_PUBLIC_API_URL || "http://localhost:5003/teachers";
 
 export const getAllTeachers = async () => {
   try {
@@ -22,7 +24,27 @@ export const getTeacherById = async (id: string) => {
   }
 };
 
+export const updateTeacher = async (id: string, teacherData: any) => {
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) throw new Error("Unauthorized: No token provided");
 
+    const response = await axios.put(
+      `${API_URL}/teachers/${id}`,
+      teacherData, // Send data directly as JSON
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error updating teacher:", error);
+    throw error;
+  }
+};
 // export const createTeacher = async (formData: any) => {
 
 //     try {
@@ -31,7 +53,7 @@ export const getTeacherById = async (id: string) => {
 //           "Content-Type": "application/json",
 //         },
 //       });
-  
+
 //       return response.data;
 //     } catch (error) {
 //       console.error("Error creating teacher:", error);
@@ -40,20 +62,20 @@ export const getTeacherById = async (id: string) => {
 //   };
 
 interface TeacherFormData {
-    username: string;
-    name: string;
-    surname: string;
-    email: string;
-    phone: string;
-    address: string;
-    bloodType: string;
-    sex: "MALE" | "FEMALE";
-    birthday: string;
-    subjectIds: number[];
-    lessonIds: number[];
-    classIds: number[];
-    img?: string;
-  }
+  username: string;
+  name: string;
+  surname: string;
+  email: string;
+  phone: string;
+  address: string;
+  bloodType: string;
+  sex: "MALE" | "FEMALE";
+  birthday: string;
+  subjectIds: number[];
+  lessonIds: number[];
+  classIds: number[];
+  img?: string;
+}
 //   export const createTeacher = async (teacherData: TeacherFormData) => {
 //     try {
 //       const response = await axios.post(`${API_URL}/teachers`, teacherData);
@@ -64,23 +86,24 @@ interface TeacherFormData {
 //     }
 //   };
 export const createTeacher = async (teacherData: TeacherFormData) => {
-    try {
-      const token = localStorage.getItem("token");
-      console.log("Using token:", token); // Debugging line
-  
-      if (!token) throw new Error("Unauthorized: No token provided");
-  
-      const response = await axios.post(`${API_URL}/teachers`, teacherData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
-  
-      return response.data;
-    } catch (error: any) {
-      console.error("Error creating teacher:", error?.response?.data || error);
-      throw new Error(error?.response?.data?.message || "Failed to create teacher");
-    }
-  };
-  
+  try {
+    const token = localStorage.getItem("token");
+    console.log("Using token:", token); // Debugging line
+
+    if (!token) throw new Error("Unauthorized: No token provided");
+
+    const response = await axios.post(`${API_URL}/teachers`, teacherData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    return response.data;
+  } catch (error: any) {
+    console.error("Error creating teacher:", error?.response?.data || error);
+    throw new Error(
+      error?.response?.data?.message || "Failed to create teacher"
+    );
+  }
+};

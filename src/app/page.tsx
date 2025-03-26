@@ -6,6 +6,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useRouter } from "next/navigation";
 import authService from "../services/authServices";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 // Validation Schema (Handles Admin vs. Other Users)
 const loginSchema = z
@@ -44,7 +46,6 @@ const Login = () => {
     console.log("onSubmit function started", data);
     try {
       setLoginError(null);
-
       const passwordOrSurname = data.passwordOrSurname ?? "";
 
       console.log("Before API Call");
@@ -54,10 +55,18 @@ const Login = () => {
       );
       console.log("API Response:", response);
 
-      alert(response.message);
-      alert(response.role);
+      // ✅ Toast Success Notification
+      toast.success(response.message, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
 
-      console.log("After Alerts:", response.message);
+      console.log("After Toast:", response.message);
 
       if (typeof window !== "undefined") {
         console.log("Saving to localStorage:", JSON.stringify(response));
@@ -83,16 +92,28 @@ const Login = () => {
       } else {
         setLoginError("Unauthorized role");
       }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       console.error("Login failed:", error);
       setLoginError(
         error.response?.data?.error || "Invalid credentials. Please try again."
       );
+
+      toast.error("Login failed. Please try again.", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
     }
   };
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
+      <ToastContainer /> {/* Ensure ToastContainer is present */}
       <div className="bg-white shadow-lg rounded-lg p-8 w-96">
         <h2 className="text-2xl font-semibold text-center text-gray-800">
           Login
