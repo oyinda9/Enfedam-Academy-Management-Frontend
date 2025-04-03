@@ -13,7 +13,12 @@ const createSchema = z.object({
   name: z.string().min(1, "First name is required!"),
   surname: z.string().min(1, "Surname is required!"),
   email: z.string().email("Invalid email address!"),
-  phone: z.string().regex(/^\+234[789][01]\d{8}$|^0[789][01]\d{8}$/, "Invalid Nigerian phone number!"),
+  phone: z
+    .string()
+    .regex(
+      /^\+234[789][01]\d{8}$|^0[789][01]\d{8}$/,
+      "Invalid Nigerian phone number!"
+    ),
   address: z.string().min(1, "Address is required!"),
   bloodType: z.string().min(1, "Blood type is required!"),
   sex: z.enum(["MALE", "FEMALE"], { message: "Select a valid gender!" }),
@@ -38,7 +43,15 @@ const updateSchema = z.object({
   img: z.instanceof(File).optional(),
 });
 
-const TeacherForm = ({ type, data }: { type: "create" | "update"; data?: any }) => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const TeacherForm = ({
+  type,
+  data,
+}: {
+  type: "create" | "update";
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  data?: any;
+}) => {
   const {
     register,
     handleSubmit,
@@ -84,7 +97,6 @@ const TeacherForm = ({ type, data }: { type: "create" | "update"; data?: any }) 
         birthday: data.birthday || "",
         classIds: data.classIds || [],
         subjectIds: data.subjectIds || [],
-     
       });
     }
   }, [data, type, reset]);
@@ -126,15 +138,16 @@ const TeacherForm = ({ type, data }: { type: "create" | "update"; data?: any }) 
     trigger("subjectIds");
   };
 
-  const onSubmit = async (formData: any) => {
+  const onSubmit = async (formData) => {
     try {
       if (type === "create") {
         await createTeacher(formData);
         alert("Teacher created successfully!");
       } else if (type === "update" && data?.id) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const updateData: any = new FormData();
         let hasChanges = false;
-  
+
         Object.keys(formData).forEach((key) => {
           if (formData[key] !== undefined && formData[key] !== data[key]) {
             hasChanges = true;
@@ -147,7 +160,7 @@ const TeacherForm = ({ type, data }: { type: "create" | "update"; data?: any }) 
             }
           }
         });
-  
+
         if (hasChanges) {
           await updateTeacher(data.id, updateData);
           alert("Teacher updated successfully!");
@@ -160,161 +173,190 @@ const TeacherForm = ({ type, data }: { type: "create" | "update"; data?: any }) 
       console.error(error);
     }
   };
-  
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="w-[600px] h-[600px] mx-auto p-4 bg-white rounded-lg overflow-y-auto">
-      <div className="grid grid-cols-2 gap-4">
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="w-[600px] h-[600px] mx-auto p-4 bg-white rounded-lg overflow-y-auto"
+    >
+      <h1 className="font-bold text-2xl text-blue-900 text-center mt-4 mb-2">
+        Create Teacher
+      </h1>
+      <div className="grid grid-cols-3 gap-6">
         {/* Username */}
         <div>
-          <label className="block text-xs font-medium text-gray-600">Username</label>
+          <label className="block text-xs font-medium text-black">
+            Username
+          </label>
           <input
             type="text"
             {...register("username")}
-            className="border p-2 w-full rounded text-gray-700"
+            className="border p-2 w-full rounded text-black"
           />
           <p className="text-red-600 text-xs">{errors.username?.message}</p>
         </div>
 
         {/* Email */}
         <div>
-          <label className="block text-xs font-medium text-gray-600">Email</label>
+          <label className="block text-xs font-medium text-black">
+            Email
+          </label>
           <input
             type="email"
             {...register("email")}
-            className="border p-2 w-full rounded text-gray-700"
+            className="border p-2 w-full rounded text-black"
           />
           <p className="text-red-600 text-xs">{errors.email?.message}</p>
         </div>
 
         {/* Name */}
         <div>
-          <label className="block text-xs font-medium text-gray-600">First Name</label>
+          <label className="block text-xs font-medium text-black">
+            First Name
+          </label>
           <input
             type="text"
             {...register("name")}
-            className="border p-2 w-full rounded text-gray-700"
+            className="border p-2 w-full rounded text-black"
           />
           <p className="text-red-600 text-xs">{errors.name?.message}</p>
         </div>
 
         {/* Surname */}
         <div>
-          <label className="block text-xs font-medium text-gray-600">Surname</label>
+          <label className="block text-xs font-medium text-black">
+            Surname
+          </label>
           <input
             type="text"
             {...register("surname")}
-            className="border p-2 w-full rounded text-gray-700"
+            className="border p-2 w-full rounded text-black"
           />
           <p className="text-red-600 text-xs">{errors.surname?.message}</p>
         </div>
 
         {/* Phone */}
         <div>
-          <label className="block text-xs font-medium text-gray-600">Phone</label>
+          <label className="block text-xs font-medium text-black">
+            Phone
+          </label>
           <input
             type="text"
             {...register("phone")}
-            className="border p-2 w-full rounded text-gray-700"
+            className="border p-2 w-full rounded text-black"
           />
           <p className="text-red-600 text-xs">{errors.phone?.message}</p>
         </div>
 
         {/* Address */}
         <div>
-          <label className="block text-xs font-medium text-gray-600">Address</label>
+          <label className="block text-xs font-medium text-black">
+            Address
+          </label>
           <input
             type="text"
             {...register("address")}
-            className="border p-2 w-full rounded text-gray-700"
+            className="border p-2 w-full rounded text-black"
           />
           <p className="text-red-600 text-xs">{errors.address?.message}</p>
         </div>
 
         {/* Blood Type */}
         <div>
-          <label className="block text-xs font-medium text-gray-600">Blood Type</label>
+          <label className="block text-xs font-medium text-black">
+            Blood Type
+          </label>
           <input
             type="text"
             {...register("bloodType")}
-            className="border p-2 w-full rounded text-gray-700"
+            className="border p-2 w-full rounded text-black"
           />
           <p className="text-red-600 text-xs">{errors.bloodType?.message}</p>
         </div>
 
         {/* Birthday */}
         <div>
-          <label className="block text-xs font-medium text-gray-600">Birthday</label>
+          <label className="block text-xs font-medium text-black">
+            Birthday
+          </label>
           <input
             type="date"
             {...register("birthday")}
-            className="border p-2 w-full rounded text-gray-700"
+            className="border p-2 w-full rounded text-black"
           />
           <p className="text-red-600 text-xs">{errors.birthday?.message}</p>
         </div>
 
         {/* Sex */}
         <div>
-          <label className="block text-xs font-medium text-gray-600">Sex</label>
+          <label className="block text-xs font-medium text-black">Sex</label>
           <select
             {...register("sex")}
-            className="border p-2 w-full rounded text-gray-700"
+            className="border p-2 w-full rounded text-black"
           >
             <option value="">Select</option>
             <option value="MALE">Male</option>
             <option value="FEMALE">Female</option>
           </select>
-          <p className="text-red-600 text-xs">{errors.sex?.message}</p>
-        </div>
-
-        {/* Classes */}
-        <div>
-          <label className="block text-xs font-medium text-gray-600">Classes</label>
-          <select
-            multiple
-            className="border p-2 w-full rounded text-gray-700"
-            onChange={handleMultiSelect}
-            value={watch("classIds") || []}
-          >
-            {loading ? (
-              <option>Loading...</option>
-            ) : (
-              classes.map((cls) => (
-                <option key={cls.id} value={cls.id}>
-                  {cls.name}
-                </option>
-              ))
-            )}
-          </select>
-          <p className="text-red-600 text-xs">{errors.classIds?.message}</p>
-        </div>
-
-        {/* Subjects */}
-        <div>
-          <label className="block text-xs font-medium text-gray-600">Subjects</label>
-          <select
-            multiple
-            className="border p-2 w-full rounded text-gray-700"
-            onChange={handleMultiSelectForSubject}
-            value={watch("subjectIds") || []}
-          >
-            {loading ? (
-              <option>Loading...</option>
-            ) : (
-              subjects.map((subject) => (
-                <option key={subject.id} value={subject.id}>
-                  {subject.name}
-                </option>
-              ))
-            )}
-          </select>
-          <p className="text-red-600 text-xs">{errors.subjectIds?.message}</p>
+          <p className="text-red-600 text-xs">
+            {String(errors.sex?.message || "")}
+          </p>
         </div>
       </div>
+      <div className="flex flex-row gap-6 mt-6">
+          {/* Classes */}
+      <div className="w-1/2">
+        <label className="block text-xs font-medium text-black">
+          Classes
+        </label>
+        <select
+          multiple
+          className="border p-2 w-full rounded text-black"
+          onChange={handleMultiSelect}
+          value={watch("classIds") || []}
+        >
+          {loading ? (
+            <option>Loading...</option>
+          ) : (
+            classes.map((cls) => (
+              <option key={cls.id} value={cls.id}>
+                {cls.name}
+              </option>
+            ))
+          )}
+        </select>
+        <p className="text-red-600 text-xs">{errors.classIds?.message}</p>
+      </div>
+
+      {/* Subjects */}
+      <div className="w-1/2 ">
+        <label className="block text-xs font-medium text-black">
+          Subjects
+        </label>
+        <select
+          multiple
+          className="border p-2 w-full rounded text-black"
+          onChange={handleMultiSelectForSubject}
+          value={watch("subjectIds") || []}
+        >
+          {loading ? (
+            <option>Loading...</option>
+          ) : (
+            subjects.map((subject) => (
+              <option key={subject.id} value={subject.id}>
+                {subject.name}
+              </option>
+            ))
+          )}
+        </select>
+        <p className="text-red-600 text-xs">{errors.subjectIds?.message}</p>
+      </div>
+      </div>
+    
 
       <button
         type="submit"
-        className="mt-4 p-2 bg-blue-600 text-white rounded w-full"
+        className="mt-12 p-2 bg-blue-600 text-white rounded w-full"
       >
         {type === "create" ? "Register Teacher" : "Update Teacher"}
       </button>

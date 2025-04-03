@@ -8,21 +8,12 @@ const schema = z.object({
   name: z.string().min(1, "Subject name is required"),
 });
 
-// Define Form Type
-type FormData = z.infer<typeof schema>;
+const SubjectForm = ({ type = "create", data }) => {
+  const { register, handleSubmit,formState: { errors, isSubmitting },} = useForm({ resolver: zodResolver(schema), defaultValues: data || {}, });
 
-const SubjectForm = ({ type = "create" }) => {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-  } = useForm<FormData>({
-    resolver: zodResolver(schema),
-  });
-
-  const onSubmit = async (data: FormData) => {
+  const onSubmit = async (FormData) => {
     try {
-      await createSubject(data);
+      await createSubject(FormData);
       alert("Subject created successfully!");
     } catch (error) {
       console.error(error);
@@ -40,7 +31,9 @@ const SubjectForm = ({ type = "create" }) => {
           className="w-full p-2 border rounded-md"
         />
         {errors.name && (
-          <p className="text-red-500 text-xs">{errors.name.message}</p>
+          <p className="text-red-500 text-xs">
+            {String(errors.name.message || "")}
+          </p>
         )}
       </div>
 
@@ -49,7 +42,11 @@ const SubjectForm = ({ type = "create" }) => {
         className="bg-blue-500 text-white px-4 py-2 rounded-md"
         disabled={isSubmitting}
       >
-        {isSubmitting ? "Submitting..." : type === "create" ? "Create Subject" : "Update Subject"}
+        {isSubmitting
+          ? "Submitting..."
+          : type === "create"
+          ? "Create Subject"
+          : "Update Subject"}
       </button>
     </form>
   );

@@ -14,7 +14,7 @@ export default function DashboardLayout({
       <div className="w-[90%] sm:w-[40%] md:w-[30%] lg:w-[20%] xl:w-[16%]  bg-white">
         <Link href="/" className="flex items-center gap-2 mt-6 ml-4">
           <Image src="/enfedam logo.jpg" alt="logo" width={40} height={32} />
-          <span className=" font-bold hidden sm:block text-sm md:text-base lg:text-lg  whitespace-nowrap">
+          <span className=" font-bold text-black hidden sm:block text-sm md:text-base lg:text-lg  whitespace-nowrap">
             Enfedam Academy
           </span>
         </Link>

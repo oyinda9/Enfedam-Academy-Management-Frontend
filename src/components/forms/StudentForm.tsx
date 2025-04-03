@@ -1,253 +1,183 @@
-"use client";
-import { z } from "zod";
-import React from "react";
-import { CloudUpload } from "lucide-react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { CloudUpload } from "lucide-react";
+import { getAllclass } from "@/services/classServices";
+import { getAllsubject } from "@/services/subjectService";
+import { getAllParent } from "@/services/parentService";
+import { createStudent } from "@/services/studentService";
 
+// Define validation schema with Zod
 const schema = z.object({
-  username: z
-    .string()
-    .min(3, { message: "Username must be at least 3 characters long!" })
-    .max(20, { message: "Username cannot exceed 20 characters!" }),
-  email: z.string().email({ message: "Invalid email address!" }),
-  password: z
-    .string()
-    .min(8, { message: "Password must be at least 8 characters long!" }),
-  firstName: z.string().min(1, { message: "First name is required!" }),
-  lastName: z.string().min(1, { message: "Last name is required!" }),
-  phone: z.string().min(1, { message: "Phone is required!" }),
-  address: z.string().min(1, { message: "Address is required!" }),
-  bloodtype: z.string().min(1, { message: "Blood  type is required!" }),
-
-  birthday: z.string().min(1, { message: "Birthday is required!" }),
-  sex: z.enum(["male", "female"], { message: "Sex is required!" }),
-  img: z.instanceof(File, { message: "Image is required!" }),
+  username: z.string().min(3).max(20),
+  email: z.string().email(),
+  name: z.string().min(1),
+  surname: z.string().min(1),
+  phone: z.string().min(1),
+  address: z.string().min(1),
+  bloodType: z.string().min(1),
+  birthday: z.string().min(1),
+  sex: z.enum(["MALE", "FEMALE"]),
+  classId: z.number(),
+  parentId: z.string(),
+  subjectIds: z.array(z.number()).optional(),
+  lessonIds: z.array(z.number()).optional(),
+  img: z.instanceof(FileList).optional(),
 });
 
-const StudentForm = ({
-  type,
-  data,
-}: {
-  type: "create" | "update";
-  data?: any;
-}) => {
+const StudentForm = ({ type, data }) => {
+  const [classes, setClasses] = useState([]);
+  const [subjects, setSubjects] = useState([]);
+  const [parents, setParents] = useState([]);
+  const [lessons, setLessons] = useState([]);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [loading, setLoading] = useState(false);
+
+  // Setup react-hook-form with validation
   const {
     register,
     handleSubmit,
     formState: { errors },
+    setValue,
+    watch,
   } = useForm({
     resolver: zodResolver(schema),
+    defaultValues: data || {},
   });
 
-  const onSubmit = handleSubmit((data) => {
-    console.log(data); // Handle form submission logic
+  // Fetch classes, subjects, and parents data on mount
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const [classesData, subjectsData, parentsData] = await Promise.all([
+          getAllclass(),
+          getAllsubject(),
+          getAllParent(),
+        ]);
+        setClasses(classesData);
+        setSubjects(subjectsData);
+        setParents(parentsData);
+        setLessons([
+          { id: 1, name: "Math Lesson" },
+          { id: 2, name: "Science Lesson" },
+          { id: 3, name: "History Lesson" },
+        ]); // Dummy lesson data
+      } catch (error) {
+        console.error("Failed to load data", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
+
+  // Handle form submission
+  const onSubmit = handleSubmit(async (formData) => {
+    try {
+      const studentData = {
+        ...formData,
+        img: formData.img?.[0] || null,
+      };
+
+      const result = await createStudent(studentData);
+      console.log("Student created:", result);
+      alert("Student created successfully!");
+    } catch (error) {
+      console.error("Error creating student:", error);
+      alert("Failed to create student.");
+    }
   });
 
   return (
     <form className="p-6" onSubmit={onSubmit}>
-      {/* Title */}
-      <h1 className="text-xl font-semibold mb-6">CREATE NEW STUDENT</h1>
+      <h1 className="text-xl font-semibold mb-6">
+        {type === "create" ? "CREATE NEW STUDENT" : "UPDATE STUDENT"}
+      </h1>
 
-      {/* Section: Authentication Information */}
-      <p className="text-lg font-medium mb-4">Authentication Information</p>
       <div className="grid grid-cols-3 gap-6 mb-6">
-        {/* Username */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Username
-          </label>
-          <input
-            type="text"
-            {...register("username")}
-            className="ring-1 ring-gray-600 p-2 rounded-md text-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <p className="text-xs text-red-600">
-            {errors.username?.message?.toString()}
-          </p>
-        </div>
-
-        {/* Email */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Email
-          </label>
-          <input
-            type="email"
-            {...register("email")}
-            className="ring-1 ring-gray-600 p-2 rounded-md text-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <p className="text-xs text-red-600">
-            {errors.email?.message?.toString()}
-          </p>
-        </div>
-
-        {/* Password */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Password
-          </label>
-          <input
-            type="password"
-            {...register("password")}
-            className="ring-1 ring-gray-600 p-2 rounded-md text-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <p className="text-xs text-red-600">
-            {errors.password?.message?.toString()}
-          </p>
-        </div>
+        <InputField label="Username" name="username" register={register} errors={errors} />
+        <InputField label="Email" name="email" type="email" register={register} errors={errors} />
+        <InputField label="Phone" name="phone" register={register} errors={errors} />
+        <InputField label="First Name" name="name" register={register} errors={errors} />
+        <InputField label="Last Name" name="surname" register={register} errors={errors} />
+        <InputField label="Address" name="address" register={register} errors={errors} />
+        <InputField label="Birthday" name="birthday" type="date" register={register} errors={errors} />
       </div>
 
-      {/* Section: Personal Information */}
-      <p className="text-lg font-medium mb-4">Personal Information</p>
+      {/* Select Dropdowns */}
       <div className="grid grid-cols-3 gap-6 mb-6">
-        {/* First Name */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700">
-            First Name
-          </label>
-          <input
-            type="text"
-            {...register("firstName")}
-            className="ring-1 ring-gray-600 p-2 rounded-md text-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <p className="text-xs text-red-600">
-            {errors.firstName?.message?.toString()}
-          </p>
-        </div>
+        <SelectField label="Sex" name="sex" options={[{ id: "MALE", name: "Male" }, { id: "FEMALE", name: "Female" }]} register={register} errors={errors} isNumber={false} />
 
-        {/* Last Name */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Last Name
-          </label>
-          <input
-            type="text"
-            {...register("lastName")}
-            className="ring-1 ring-gray-600 p-2 rounded-md text-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <p className="text-xs text-red-600">
-            {errors.lastName?.message?.toString()}
-          </p>
-        </div>
+        <SelectField label="Blood Type" name="bloodType" options={[
+          { id: "A+", name: "A+" }, { id: "A-", name: "A-" }, { id: "B+", name: "B+" },
+          { id: "B-", name: "B-" }, { id: "O+", name: "O+" }, { id: "O-", name: "O-" },
+          { id: "AB+", name: "AB+" }, { id: "AB-", name: "AB-" }
+        ]} register={register} errors={errors} isNumber={false} />
 
-        {/* Phone */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Phone
-          </label>
-          <input
-            type="text"
-            {...register("phone")}
-            className="ring-1 ring-gray-600 p-2 rounded-md text-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <p className="text-xs text-red-600">
-            {errors.phone?.message?.toString()}
-          </p>
-        </div>
+        <SelectField label="Class" name="classId" options={classes} register={register} errors={errors} isNumber={true} />
 
-        {/* Address */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Address
-          </label>
-          <input
-            type="text"
-            {...register("address")}
-            className="ring-1 ring-gray-600 p-2 rounded-md text-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <p className="text-xs text-red-600">
-            {errors.address?.message?.toString()}
-          </p>
-        </div>
+        <SelectField label="Parent" name="parentId" options={parents} register={register} errors={errors} />
 
-        {/* Birthday */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Birthday
-          </label>
-          <input
-            type="date"
-            {...register("birthday")}
-            className="ring-1 ring-gray-600 p-2 rounded-md text-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <p className="text-xs text-red-600">
-            {errors.birthday?.message?.toString()}
-          </p>
-        </div>
-
-        {/* Sex */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Sex</label>
-          <select
-            {...register("sex")}
-            className="ring-1 ring-gray-600 p-2 rounded-md text-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            <option value="">Select</option>
-            <option value="male">Male</option>
-            <option value="female">Female</option>
-          </select>
-          <p className="text-xs text-red-600">
-            {errors.sex?.message?.toString()}
-          </p>
-        </div>
-
-        {/* Blood Type */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Blood Type
-          </label>
-          <select
-            {...register("bloodType")}
-            className="ring-1 ring-gray-600 p-2 rounded-md text-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            <option value="">Select</option>
-            <option value="A+">A+</option>
-            <option value="A-">A-</option>
-            <option value="B+">B+</option>
-            <option value="B-">B-</option>
-            <option value="O+">O+</option>
-            <option value="O-">O-</option>
-            <option value="AB+">AB+</option>
-            <option value="AB-">AB-</option>
-          </select>
-          <p className="text-xs text-red-600">
-            {errors.bloodType?.message?.toString()}
-          </p>
-        </div>
-
-        {/* Profile Image */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Profile Image
-          </label>
-          <div className="flex gap-2">
-            <input
-              type="file"
-              id="img"
-              {...register("img")}
-              className="ring-1 ring-gray-600 p-2 rounded-md text-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <CloudUpload className="rounded-md" />
-          </div>
-
-          <p className="text-xs text-red-600">
-            {errors.img?.message?.toString()}
-          </p>
-        </div>
+        <MultiSelectField label="Subjects" name="subjectIds" options={subjects} register={register} setValue={setValue} watch={watch} errors={errors} />
+        <MultiSelectField label="Lessons" name="lessonIds" options={lessons} register={register} setValue={setValue} watch={watch} errors={errors} />
       </div>
 
-      {/* Submit Button */}
-      <div>
-        <button
-          type="submit"
-          className="bg-blue-700 text-white p-3 rounded-md hover:bg-blue-800 w-full"
-        >
-          {type === "create" ? "Create" : "Update"}
-        </button>
+      {/* Profile Image Upload */}
+      <div className="mb-4">
+        <label className="block text-sm font-medium text-gray-700">Profile Image</label>
+        <div className="flex gap-2">
+          <input type="file" {...register("img")} className="form-input" />
+          <CloudUpload className="rounded-md" />
+        </div>
+        <ErrorMessage errors={errors} name="img" />
       </div>
+
+      <button type="submit" className="bg-blue-700 text-white p-3 rounded-md hover:bg-blue-800 w-full">
+        {type === "create" ? "Create" : "Update"}
+      </button>
     </form>
   );
 };
+
+// Input Field Component
+const InputField = ({ label, name, type = "text", register, errors }) => (
+  <div>
+    <label className="block text-sm font-medium text-gray-700">{label}</label>
+    <input type={type} {...register(name)} className="form-input border border-black py-2 rounded-md px-2" />
+    <ErrorMessage errors={errors} name={name} />
+  </div>
+);
+
+// Select Field Component
+const SelectField = ({ label, name, options, register, errors, isNumber = false }) => (
+  <div>
+    <label className="text-sm font-medium text-gray-700 flex flex-col space-y-1">{label}</label>
+    <select {...register(name, isNumber ? { valueAsNumber: true } : {})} className="form-input border border-black py-2 rounded-md px-2 w-[200px]">
+      <option value="">Select</option>
+      {options.map((option) => <option key={option.id} value={option.id}>{option.name}</option>)}
+    </select>
+    <ErrorMessage errors={errors} name={name} />
+  </div>
+);
+
+// Multi-Select Field Component
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const MultiSelectField = ({ label, name, options, register, setValue, watch, errors }) => {
+  const selectedValues = watch(name) || [];
+
+  return (
+    <div>
+      <label className="text-sm font-medium text-gray-700">{label}</label>
+      <select multiple value={selectedValues} onChange={(e) => setValue(name, Array.from(e.target.selectedOptions, o => Number(o.value)))} className="form-input border border-black py-2 rounded-md px-2">
+        {options.map((option) => <option key={option.id} value={option.id}>{option.name}</option>)}
+      </select>
+      <ErrorMessage errors={errors} name={name} />
+    </div>
+  );
+};
+
+const ErrorMessage = ({ errors, name }) => errors[name] ? <p className="text-xs text-red-600">{errors[name]?.message}</p> : null;
 
 export default StudentForm;

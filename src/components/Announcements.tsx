@@ -1,60 +1,71 @@
-import React from "react";
+"use client";
+import React, { useState, useEffect } from "react";
 
-const Announcements = () => {
+import "react-calendar/dist/Calendar.css";
+import { Ellipsis } from "lucide-react";
+import { getAllEvents } from "@/services/eventsServices"; 
+const EventCalendar = () => {
+  
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [events, setEvents] = useState<any[]>([]); 
+  const [loading, setLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        const data = await getAllEvents();
+
+        // Sort events by createdAt in descending order (latest first)
+        const sortedEvents = data.sort(
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        );
+
+        setEvents(sortedEvents);
+      } catch (error) {
+        console.error("Failed to fetch events", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchEvents();
+  }, []);
+
   return (
-    <div className="bg-white p-4 rounded-md">
-      <div className="flex items-center justify-between">
-        <h1 className="text-lg font-semibold">Annoucements</h1>
-        <span className="text-sm text-gray-600">View all</span>
+    <div className="p-4 rounded-md mb-8 ">
+      
+
+      {/* Events Section */}
+      <div className="flex items-center justify-between mt-6">
+        <h1 className="text-xl font-semibold my-4">Events</h1>
+        <Ellipsis className="cursor-pointer text-black" />
       </div>
-      <div className="flex flex-col gap-4 mt-4">
-        <div className="bg-blue-200 rounded-md p-4">
-          <div className="flex items-center justify-between">
-            <h2 className="font-medium">
-              Lorem ipsum dolor sit.adipisicing elit.
-            </h2>
-            <span className="text-xs text-gray-400 bg-white rounded-md px-1 py-1">
-              2025-01-01
-            </span>
-          </div>
-          <p className="text-sm text-gray-500  mt-1">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Incidunt
-            perferendis facilis soluta corrupti ducimus odit praesentium
-          </p>
-        </div>
 
-        <div className="bg-green-200 rounded-md p-4">
-          <div className="flex items-center justify-between">
-            <h2 className="font-medium">
-              Lorem ipsum dolor sit.adipisicing elit.
-            </h2>
-            <span className="text-xs text-gray-400 bg-white rounded-md px-1 py-1">
-              2025-01-01
-            </span>
-          </div>
-          <p className="text-sm text-gray-500 mt-1">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Incidunt
-            perferendis facilis soluta corrupti ducimus odit praesentium
-          </p>
-        </div>
+      {/* List of Events */}
+      <div className="flex flex-col gap-4 h-[420px] overflow-y-auto">
+        {loading ? (
+          <p>Loading events...</p>
+        ) : (
+          events.map((event) => (
+            <div
+              className="p-5 rounded-md border-2 border-gray-200 border-t-4 odd:border-t-red-500 even:border-t-[#5fa0cb]"
+              key={event.id}
+            >
+              <div className="flex items-center justify-between">
+                <h1 className="font-semibold text-gray-600">{event.title}</h1>
 
-        <div className="bg-red-200 rounded-md p-4">
-          <div className="flex items-center justify-between">
-            <h2 className="font-medium">
-              Lorem ipsum dolor sit.adipisicing elit.
-            </h2>
-            <span className="text-xs text-gray-400 bg-white rounded-md px-1 py-1">
-              2025-01-01
-            </span>
-          </div>
-          <p className="text-sm text-gray-600 mt-1">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Incidunt
-            perferendis facilis soluta corrupti ducimus odit praesentium
-          </p>
-        </div>
+                <h1 className="font-semibold text-gray-400">
+                  {new Date(event.createdAt).toLocaleDateString("en-GB")}
+                </h1>
+              </div>
+              <p className="mt-2 text-black text-sm">{event.description}</p>
+            </div>
+          ))
+        )}
       </div>
     </div>
   );
 };
 
-export default Announcements;
+export default EventCalendar;

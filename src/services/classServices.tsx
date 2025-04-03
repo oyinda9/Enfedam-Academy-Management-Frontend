@@ -42,3 +42,13 @@ export const getAllclass = async () => {
       throw error;
     }
   };
+
+  export const getClassById = async (id: string) => {
+    try {
+      const response = await axios.get(`${API_URL}/class/classes/${id}`);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching parent:", error);
+      throw error;
+    }
+  }

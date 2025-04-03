@@ -1,4 +1,11 @@
+import { NextRequest, NextResponse } from "next/server";
 
+export function middleware(req: NextRequest) {
+  // You can add your custom logic here
+  console.log("Middleware is running for:", req.nextUrl.pathname);
+
+  return NextResponse.next();
+}
 
 export const config = {
   matcher: [

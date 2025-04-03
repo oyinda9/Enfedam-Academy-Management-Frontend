@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import TableSearch from "@/components/TableSearch";
-import { Filter, ArrowDownNarrowWide } from "lucide-react";
+import { Filter, ArrowDownNarrowWide,View } from "lucide-react";
 import Pagination from "@/components/Pagination";
 import Table from "@/components/Table";
 import Link from "next/link";
@@ -31,6 +31,7 @@ const columns = [
 const ParentListPage = () => {
  const [parents, setParents] = useState<ParentList[]>([]);
   const [loading, setLoading] = useState(true);
+   const [userRole, setUserRole] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchParents = async () => {
@@ -44,6 +45,10 @@ const ParentListPage = () => {
       }
     };
     fetchParents();
+    const storedRole = localStorage.getItem("role");
+    if (storedRole) {
+      setUserRole(storedRole);
+    }
   }, []);
   
 const renderRow = (item: ParentList) => (
@@ -61,17 +66,20 @@ const renderRow = (item: ParentList) => (
     <td className="hidden md:table-cell">{item.email}</td>
     <td className="hidden md:table-cell">{item.phone}</td>
     <td className="hidden md:table-cell">{item.address}</td>
-    <td>
-      <div className="flex items-center gap-2 self-end">
-        <Link href={`/list/teachers/${item.id}`}></Link>
-        {role === "admin" && (
-          <>
-            <FormModal table="parent" type="update" data={item} />
-            <FormModal table="parent" type="delete" id={item.id} data={undefined} />
-          </>
-        )}
-      </div>
-    </td>
+    <td className="px-4 py-2">
+        <div className="flex items-center gap-4">
+          {" "}
+          {/* Increased gap for better spacing */}
+          <Link href={`/list/parents/${item.id}`}>
+            <button className="w-8 h-8 flex items-center justify-center rounded-full bg-blue-200">
+              <View width={18} />
+            </button>
+          </Link>
+          {userRole === "ADMIN" && (
+            <FormModal table="student" type="delete" id={item.id} />
+          )}
+        </div>
+      </td>
   </tr>
 );
 if (loading) return <p>Loading parents...</p>;

@@ -13,9 +13,7 @@ import {
   CheckCircle,
   Calendar,
   MessageSquare,
-  Settings,
-  UserCircle,
-  LogOut,
+ 
   Award,
 } from "lucide-react";
 
@@ -34,7 +32,7 @@ const Menu = () => {
     {
       label: "Home",
       icon: <Home size={20} />,
-      link: "/",
+      link: "/admin",
       visible: ["ADMIN", "STUDENT", "USER", "TEACHER"],
     },
     {
@@ -83,7 +81,7 @@ const Menu = () => {
       label: "Assignments",
       icon: <FileText size={20} />,
       link: "/list/assignments",
-      visible: ["ADMIN", "STUDENT", "TEACHER"],
+      visible: [ "STUDENT", "TEACHER"],
     },
     {
       label: "Attendance",
@@ -111,26 +109,26 @@ const Menu = () => {
     },
   ];
 
-  const secondaryMenuItems = [
-    {
-      label: "Settings",
-      icon: <Settings size={20} />,
-      link: "/settings",
-      visible: ["ADMIN", "STUDENT", "TEACHER"],
-    },
-    {
-      label: "Profile",
-      icon: <UserCircle size={20} />,
-      link: "/profile",
-      visible: ["ADMIN", "STUDENT", "USER", "TEACHER"],
-    },
-    {
-      label: "Logout",
-      icon: <LogOut size={20} />,
-      link: "/logout",
-      visible: ["ADMIN", "STUDENT", "USER", "TEACHER"],
-    },
-  ];
+  // const secondaryMenuItems = [
+  //   {
+  //     label: "Settings",
+  //     icon: <Settings size={20} />,
+  //     link: "/settings",
+  //     visible: ["ADMIN", "STUDENT", "TEACHER"],
+  //   },
+  //   {
+  //     label: "Profile",
+  //     icon: <UserCircle size={20} />,
+  //     link: "/profile",
+  //     visible: ["ADMIN", "STUDENT", "USER", "TEACHER"],
+  //   },
+  //   {
+  //     label: "Logout",
+  //     icon: <LogOut size={20} />,
+  //     link: "/logout",
+  //     visible: ["ADMIN", "STUDENT", "USER", "TEACHER"],
+  //   },
+  // ];
 
   return (
     <nav className="p-4 w-64 flex flex-col justify-between items-center">
@@ -157,7 +155,7 @@ const Menu = () => {
       </div>
 
       {/* Secondary Menu */}
-      <div className="mt-8">
+      {/* <div className="mt-8">
         <h2 className="text-lg font-bold mb-4">Account</h2>
         <ul className="space-y-4">
           {secondaryMenuItems.map((item) => {
@@ -180,7 +178,7 @@ const Menu = () => {
             return null;
           })}
         </ul>
-      </div>
+      </div> */}
     </nav>
   );
 };

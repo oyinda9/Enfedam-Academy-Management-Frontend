@@ -15,7 +15,7 @@ const schema = z.object({
 // Define Form Type
 type FormData = z.infer<typeof schema>;
 
-const ClassForm = ({ type = "create" }) => {
+const ClassForm = ({ type = "create" ,data}) => {
   const [supervisors, setSupervisors] = useState<{ id: string; name: string }[]>([]);
 
   // React Hook Form Setup
@@ -25,11 +25,12 @@ const ClassForm = ({ type = "create" }) => {
     formState: { errors },
   } = useForm<FormData>({
     resolver: zodResolver(schema),
-    defaultValues: {
-      name: "",
-      capacity: 0,
-      supervisorId: "",
-    },
+    // defaultValues: {
+    //   name: "",
+    //   capacity: 0,
+    //   supervisorId: "",
+    // },
+    defaultValues: data || {},
   });
 
   // Fetch teachers on component mount
@@ -50,9 +51,9 @@ const ClassForm = ({ type = "create" }) => {
   }, []);
 
   // Form Submission Handler
-  const onSubmit = async (formData: FormData) => {
+  const onSubmit = async (FormData) => {
     try {
-      const result = await createClass(formData);
+      const result = await createClass(FormData);
       console.log("Class created:", result);
       alert("Class created successfully!");
     } catch (error) {

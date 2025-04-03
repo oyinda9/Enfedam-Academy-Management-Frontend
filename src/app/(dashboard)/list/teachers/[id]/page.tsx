@@ -72,7 +72,7 @@ const SingleTeacherPage = () => {
                 alt="Teacher profile"
                 width={144}
                 height={144}
-                className="w-20 h-20 rounded-full object-cover"
+                className="w-20 h-20 rounded-full object-cover border-black border-2"
               />
             </div>
 

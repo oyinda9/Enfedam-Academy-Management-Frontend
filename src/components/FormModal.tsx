@@ -24,6 +24,9 @@ const ClassForm = dynamic(() => import("./forms/ClassForm"), {
 const SubjectForm = dynamic(() => import("./forms/subjectForm"), {
   loading: () => <h1>Loading .....</h1>,
 });
+const EventForm = dynamic(() => import("./forms/eventForm"), {
+  loading: () => <h1>Loading .....</h1>,
+});
 
 
 const forms: {
@@ -34,6 +37,7 @@ const forms: {
   parent: (type, data) => <ParentForm type={type} data={data} />,
   class: (type, data) => <ClassForm type={type} data={data} />,
   subject: (type, data) => <SubjectForm type={type} data={data} />,
+  event: (type, data) => <EventForm type={type} data={data} />,
 };
 const FormModal = ({
   table,

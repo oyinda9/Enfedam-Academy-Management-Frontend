@@ -2,23 +2,27 @@
 import { useState, useEffect } from "react";
 import React from "react";
 import { useRouter } from "next/navigation";
-import { Search, MessageCircle, Megaphone, UserCircle } from "lucide-react";
-
+import { MessageCircle, Megaphone, UserCircle } from "lucide-react";
+import ProfilePage from "@/components/profilePage";
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [userName, setUserName] = useState("");
+  const [userEmail, setEmail] = useState("");
   const [userRole, setUserRole] = useState("");
+  const [showProfile, setShowProfile] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
-
+  
     if (storedUser) {
       const userData = JSON.parse(storedUser);
-      setUserName(userData.name || ""); // Default to "User" if name is missing
-      setUserRole(userData.role || ""); // Default to "Admin" if role is missing
+      setUserName(userData.user.username ||userData.user.name || userData.user.surname || "User"); // ✅ Use `userData.username`
+      setUserRole(userData.role || ""); // ✅ Role is already correct
+      setEmail(userData.user.email)
     }
   }, []);
+  
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -27,9 +31,9 @@ const Navbar = () => {
   };
 
   return (
-    <div className="flex items-center justify-between mr-6">
+    <div className="flex items-center justify-end mr-6">
       {/* SEARCH BAR */}
-      <div className="hidden md:flex mt-6">
+      {/* <div className="hidden md:flex mt-6">
         <div className="relative w-full mx-4">
           <input
             type="text"
@@ -41,7 +45,7 @@ const Navbar = () => {
             className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 "
           />
         </div>
-      </div>
+      </div> */}
 
       {/* ICONS AND USERS */}
       <div className="flex items-center gap-8 mt-6">
@@ -63,6 +67,7 @@ const Navbar = () => {
         {/* User Info */}
         <div className="flex items-center gap-3">
           <div className="flex flex-col text-sm">
+          <span className="font-medium text-gray-800">{userEmail}</span>
             <span className="font-medium text-gray-800">{userName}</span>
             <span className="text-xs text-gray-400">{userRole}</span>
           </div>
@@ -79,14 +84,20 @@ const Navbar = () => {
             {isOpen && (
               <div className="absolute right-0 mt-2 w-[300px] bg-white shadow-lg rounded-lg border z-10">
                 <ul className="py-2 text-gray-700">
-                  <li>
+                  <li
+                    onClick={() => setShowProfile(!showProfile)}
+                    className="cursor-pointer block px-4 py-2 hover:bg-gray-100"
+                  >
+                    Profile
+                  </li>
+                  {/* <li>
                     <a
                       href="/profile"
                       className="block px-4 py-2 hover:bg-gray-100"
                     >
-                      Profile
+                      Settings
                     </a>
-                  </li>
+                  </li> */}
                   <li>
                     <button
                       onClick={handleLogout}
@@ -96,6 +107,7 @@ const Navbar = () => {
                     </button>
                   </li>
                 </ul>
+                {showProfile && <ProfilePage />}
                 <div className="border-t px-4 py-4 text-xs text-gray-500 text-center">
                   Powered by Enfedam Academy
                 </div>
