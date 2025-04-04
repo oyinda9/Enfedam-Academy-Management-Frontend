@@ -2,26 +2,29 @@
 
 import React, { useEffect, useState } from "react";
 import TableSearch from "@/components/TableSearch";
-import { Filter, ArrowDownNarrowWide,View } from "lucide-react";
+import { Filter, ArrowDownNarrowWide, View } from "lucide-react";
 import Pagination from "@/components/Pagination";
 import Table from "@/components/Table";
 import Link from "next/link";
-import { role } from "../../../../lib/data";
 import FormModal from "@/components/FormModal";
 import { getAllParent } from "@/services/parentService";
+
 interface ParentList {
-  id: number;
+  id: string;
   name: string;
   email: string;
   phone: string;
   address: string;
-  students: { id: number; name: string }[];
+  students: { id: string; name: string; supervisorId: string }[]; // Changed to supervisorId instead of classId
 }
-
 
 const columns = [
   { headers: "Info", accessor: "info" },
-  { headers: "Student Name", accessor: "students", className: "hidden md:table-cell" },
+  {
+    headers: "Student Name",
+    accessor: "students",
+    className: "hidden md:table-cell",
+  },
   { headers: "Email", accessor: "email" },
   { headers: "Phone", accessor: "phone" },
   { headers: "Address", accessor: "address" },
@@ -29,61 +32,86 @@ const columns = [
 ];
 
 const ParentListPage = () => {
- const [parents, setParents] = useState<ParentList[]>([]);
+  const [parents, setParents] = useState<ParentList[]>([]);
   const [loading, setLoading] = useState(true);
-   const [userRole, setUserRole] = useState<string | null>(null);
-
+  const [userRole, setUserRole] = useState<string | null>(null);
+  const [user, setUser] = useState<any | null>(null); // Store user data
+  
   useEffect(() => {
-    const fetchParents = async () => {
-      try {
-        const data = await getAllParent();
-        setParents(data);
-      } catch (error) {
-        console.error("Failed to load teachers", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchParents();
+    const loggedInUser = JSON.parse(localStorage.getItem("user") || "{}");
+    
+    // Check if user data is already available to avoid unnecessary state update
+    if (loggedInUser?.id && !user) {
+      setUser(loggedInUser);
+    }
+
     const storedRole = localStorage.getItem("role");
     if (storedRole) {
       setUserRole(storedRole);
     }
-  }, []);
+
+    const fetchParents = async () => {
+      try {
+        const data = await getAllParent();
+
+        // If the logged-in user is a teacher, filter parents whose children have this teacher's id as supervisorId
+        if (loggedInUser?.role === "TEACHER") {
+          const filteredTeacherParents = data.filter((parent) =>
+            parent.students.some((student) => student.supervisorId === loggedInUser.id)
+          );
+          setParents(filteredTeacherParents);
+        } else if (loggedInUser?.role === "ADMIN") {
+          // Admin can see all parents
+          setParents(data);
+        }
+      } catch (error) {
+        console.error("Failed to load parents", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchParents();
+  }, [user]); // Only re-run effect if 'user' state changes
   
-const renderRow = (item: ParentList) => (
-  <tr key={item.id} className="border-b border-blue-100 even:bg-slate-100 text-sm hover:bg-red-50">
-    <td className="flex items-center gap-4 p-4">
-      <div className="flex flex-col">
-        <h3 className="font-semibold">{item.name}</h3>
-      </div>
-    </td>
-    <td className="hidden md:table-cell">
-      {item.students.length
-        ? item.students.map((student) => student.name).join(", ")
-        : "No students"}
-    </td>
-    <td className="hidden md:table-cell">{item.email}</td>
-    <td className="hidden md:table-cell">{item.phone}</td>
-    <td className="hidden md:table-cell">{item.address}</td>
-    <td className="px-4 py-2">
+  const isAdmin = user?.role === "ADMIN";
+
+  const renderRow = (item: ParentList) => (
+    <tr
+      key={item.id}
+      className="border-b border-blue-100 even:bg-slate-100 text-sm hover:bg-red-50"
+    >
+      <td className="flex items-center gap-4 p-4">
+        <div className="flex flex-col">
+          <h3 className="font-semibold">{item.name}</h3>
+        </div>
+      </td>
+      <td className="hidden md:table-cell">
+        {item.students.length
+          ? item.students.map((student) => student.name).join(", ")
+          : "No students"}
+      </td>
+      <td className="hidden md:table-cell">{item.email}</td>
+      <td className="hidden md:table-cell">{item.phone}</td>
+      <td className="hidden md:table-cell">{item.address}</td>
+      <td className="px-4 py-2">
         <div className="flex items-center gap-4">
-          {" "}
-          {/* Increased gap for better spacing */}
           <Link href={`/list/parents/${item.id}`}>
             <button className="w-8 h-8 flex items-center justify-center rounded-full bg-blue-200">
               <View width={18} />
             </button>
           </Link>
-          {userRole === "ADMIN" && (
+          {isAdmin && (
             <FormModal table="student" type="delete" id={item.id} />
           )}
         </div>
       </td>
-  </tr>
-);
-if (loading) return <p>Loading parents...</p>;
+    </tr>
+  );
+
+  if (loading) return <p>Loading parents...</p>;
   if (parents.length === 0) return <p>No parents found.</p>;
+
   return (
     <div className="bg-white p-4 rounded-md flex-1 mt-0">
       {/* TOP */}
@@ -98,7 +126,9 @@ if (loading) return <p>Loading parents...</p>;
             <button className="w-8 h-8 flex items-center justify-center rounded-full bg-green-300">
               <ArrowDownNarrowWide size={22} color="black" />
             </button>
-            {role === "admin" && <FormModal table="parent" type="create" data={undefined} />}
+            {userRole === "ADMIN" && (
+              <FormModal table="parent" type="create" data={undefined} />
+            )}
           </div>
         </div>
       </div>

@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { useParams } from "next/navigation";
 import { Droplet, CalendarFold, Mail, Phone, School } from "lucide-react";
-import { FaChalkboardTeacher } from "react-icons/fa";
 import BigCalendar from "@/components/BigCalendar";
 import Announcements from "@/components/Announcements";
 import Link from "next/link";
