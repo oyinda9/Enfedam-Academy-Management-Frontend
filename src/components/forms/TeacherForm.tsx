@@ -6,7 +6,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { createTeacher, updateTeacher } from "@/services/teacherServices";
 import { getAllclass } from "@/services/classServices";
 import { getAllsubject } from "@/services/subjectService";
-
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 // Dynamic Validation Schema
 const createSchema = z.object({
   username: z.string().min(3, "Username must be at least 3 characters!"),
@@ -142,7 +143,7 @@ const TeacherForm = ({
     try {
       if (type === "create") {
         await createTeacher(formData);
-        alert("Teacher created successfully!");
+        toast.success("Teacher created successfully!");
       } else if (type === "update" && data?.id) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const updateData: any = new FormData();
@@ -163,9 +164,9 @@ const TeacherForm = ({
 
         if (hasChanges) {
           await updateTeacher(data.id, updateData);
-          alert("Teacher updated successfully!");
+          toast.success("Teacher updated successfully!");
         } else {
-          alert("No changes detected!");
+          toast.error("No changes detected!");
         }
       }
     } catch (error) {
@@ -177,8 +178,19 @@ const TeacherForm = ({
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="w-[600px] h-[600px] mx-auto p-4 bg-white rounded-lg overflow-y-auto"
+      className=" h-[600px] mx-auto p-4  rounded-lg overflow-y-auto"
     >
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
       <h1 className="font-bold text-2xl text-blue-900 text-center mt-4 mb-2">
         Create Teacher
       </h1>
@@ -198,9 +210,7 @@ const TeacherForm = ({
 
         {/* Email */}
         <div>
-          <label className="block text-xs font-medium text-black">
-            Email
-          </label>
+          <label className="block text-xs font-medium text-black">Email</label>
           <input
             type="email"
             {...register("email")}
@@ -237,9 +247,7 @@ const TeacherForm = ({
 
         {/* Phone */}
         <div>
-          <label className="block text-xs font-medium text-black">
-            Phone
-          </label>
+          <label className="block text-xs font-medium text-black">Phone</label>
           <input
             type="text"
             {...register("phone")}
@@ -304,55 +312,54 @@ const TeacherForm = ({
         </div>
       </div>
       <div className="flex flex-row gap-6 mt-6">
-          {/* Classes */}
-      <div className="w-1/2">
-        <label className="block text-xs font-medium text-black">
-          Classes
-        </label>
-        <select
-          multiple
-          className="border p-2 w-full rounded text-black"
-          onChange={handleMultiSelect}
-          value={watch("classIds") || []}
-        >
-          {loading ? (
-            <option>Loading...</option>
-          ) : (
-            classes.map((cls) => (
-              <option key={cls.id} value={cls.id}>
-                {cls.name}
-              </option>
-            ))
-          )}
-        </select>
-        <p className="text-red-600 text-xs">{errors.classIds?.message}</p>
-      </div>
+        {/* Classes */}
+        <div className="w-1/2">
+          <label className="block text-xs font-medium text-black">
+            Classes
+          </label>
+          <select
+            multiple
+            className="border p-2 w-full rounded text-black"
+            onChange={handleMultiSelect}
+            value={watch("classIds") || []}
+          >
+            {loading ? (
+              <option>Loading...</option>
+            ) : (
+              classes.map((cls) => (
+                <option key={cls.id} value={cls.id}>
+                  {cls.name}
+                </option>
+              ))
+            )}
+          </select>
+          <p className="text-red-600 text-xs">{errors.classIds?.message}</p>
+        </div>
 
-      {/* Subjects */}
-      <div className="w-1/2 ">
-        <label className="block text-xs font-medium text-black">
-          Subjects
-        </label>
-        <select
-          multiple
-          className="border p-2 w-full rounded text-black"
-          onChange={handleMultiSelectForSubject}
-          value={watch("subjectIds") || []}
-        >
-          {loading ? (
-            <option>Loading...</option>
-          ) : (
-            subjects.map((subject) => (
-              <option key={subject.id} value={subject.id}>
-                {subject.name}
-              </option>
-            ))
-          )}
-        </select>
-        <p className="text-red-600 text-xs">{errors.subjectIds?.message}</p>
+        {/* Subjects */}
+        <div className="w-1/2 ">
+          <label className="block text-xs font-medium text-black">
+            Subjects
+          </label>
+          <select
+            multiple
+            className="border p-2 w-full rounded text-black"
+            onChange={handleMultiSelectForSubject}
+            value={watch("subjectIds") || []}
+          >
+            {loading ? (
+              <option>Loading...</option>
+            ) : (
+              subjects.map((subject) => (
+                <option key={subject.id} value={subject.id}>
+                  {subject.name}
+                </option>
+              ))
+            )}
+          </select>
+          <p className="text-red-600 text-xs">{errors.subjectIds?.message}</p>
+        </div>
       </div>
-      </div>
-    
 
       <button
         type="submit"

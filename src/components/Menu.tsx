@@ -13,27 +13,41 @@ import {
   CheckCircle,
   Calendar,
   MessageSquare,
- 
+  ReceiptText,
+  Captions,
   Award,
+  Wallet,
 } from "lucide-react";
 
 const Menu = () => {
   const [userRole, setUserRole] = useState<string | null>(null);
 
   useEffect(() => {
-    // Assuming you store user role in localStorage after login
     const storedRole = localStorage.getItem("role");
     if (storedRole) {
       setUserRole(storedRole);
     }
   }, []);
 
+  const dashboardLinks = {
+    ADMIN: "/admin",
+    STUDENT: "/student",
+    TEACHER: "/teacher",
+    USER: "/parent",
+  };
+
   const mainMenuItems = [
     {
       label: "Home",
       icon: <Home size={20} />,
-      link: "/admin",
+      link: dashboardLinks[userRole] || "/",
       visible: ["ADMIN", "STUDENT", "USER", "TEACHER"],
+    },
+    {
+      label: "Students",
+      icon: <GraduationCap size={20} />,
+      link: "/list/students",
+      visible: ["ADMIN", "TEACHER", "USER"],
     },
     {
       label: "Teachers",
@@ -47,23 +61,12 @@ const Menu = () => {
       link: "/list/parents",
       visible: ["ADMIN", "TEACHER"],
     },
+
     {
-      label: "Students",
-      icon: <GraduationCap size={20} />,
-      link: "/list/students",
-      visible: ["ADMIN", "TEACHER", "USER"],
-    },
-    {
-      label: "Exams",
-      icon: <ClipboardList size={20} />,
-      link: "/list/exams",
-      visible: ["ADMIN", "STUDENT", "USER", "TEACHER"],
-    },
-    {
-      label: "Lessons",
-      icon: <Book size={20} />,
-      link: "/list/lessons",
-      visible: ["ADMIN", "TEACHER"],
+      label: "Classes",
+      icon: <School size={20} />,
+      link: "/list/classes",
+      visible: ["ADMIN", "TEACHER", "STUDENT"],
     },
     {
       label: "Subjects",
@@ -72,28 +75,53 @@ const Menu = () => {
       visible: ["ADMIN", "TEACHER"],
     },
     {
-      label: "Classes",
-      icon: <School size={20} />,
-      link: "/list/classes",
-      visible: ["ADMIN", "TEACHER", "STUDENT"],
+      label: "Lessons",
+      icon: <Captions size={20} />,
+      link: "/list/lessons",
+      visible: ["ADMIN", "TEACHER"],
     },
+    {
+      label: "Exams",
+      icon: <ClipboardList size={20} />,
+      link: "/list/exams",
+      visible: ["ADMIN", "STUDENT", "TEACHER"],
+    },
+
     {
       label: "Assignments",
       icon: <FileText size={20} />,
       link: "/list/assignments",
-      visible: [ "STUDENT", "TEACHER"],
+      visible: ["STUDENT", "TEACHER"],
     },
     {
       label: "Attendance",
       icon: <CheckCircle size={20} />,
       link: "/list/attendance",
-      visible: ["ADMIN", "USER", "TEACHER"],
+      visible: ["ADMIN", "TEACHER"],
     },
     {
       label: "Result",
       icon: <Award size={20} />,
       link: "/list/results",
       visible: ["ADMIN", "USER", "TEACHER", "STUDENT"],
+    },
+    {
+      label: "Report",
+      icon: <ReceiptText size={20} />,
+      link: "/list/report",
+      visible: ["ADMIN"],
+    },
+    {
+      label: "Financial Report",
+      icon: <Wallet size={20} />,
+      link: "/list/finance",
+      visible: ["ADMIN"],
+    },
+    {
+      label: "Payment",
+      icon: <Wallet size={20} />,
+      link: "/list/Payments",
+      visible: ["USER"],
     },
     {
       label: "Events",

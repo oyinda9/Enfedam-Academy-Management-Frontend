@@ -186,8 +186,7 @@ const TeacherListPage = () => {
     </tr>
   );
 
-  if (loading) return <p>Loading teachers...</p>;
-  if (teachers.length === 0) return <p>No teachers found.</p>;
+ 
 
   return (
     <div className="bg-white p-4 rounded-md flex-1 mt-0">

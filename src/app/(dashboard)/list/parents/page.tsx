@@ -6,16 +6,18 @@ import { Filter, ArrowDownNarrowWide, View } from "lucide-react";
 import Pagination from "@/components/Pagination";
 import Table from "@/components/Table";
 import Link from "next/link";
+import { role } from "../../../../lib/data";
 import FormModal from "@/components/FormModal";
 import { getAllParent } from "@/services/parentService";
-
+import PulseLoader from "@/components/loader";
+import { getTeacherById } from "@/services/teacherServices";
 interface ParentList {
-  id: string;
+  id: number;
   name: string;
   email: string;
   phone: string;
   address: string;
-  students: { id: string; name: string; supervisorId: string }[]; // Changed to supervisorId instead of classId
+  students: { id: number; name: string }[];
 }
 
 const columns = [
@@ -30,38 +32,41 @@ const columns = [
   { headers: "Address", accessor: "address" },
   { headers: "Action", accessor: "action" },
 ];
-
+const ITEMS_PER_PAGE = 5; // Adjust number of items per page
 const ParentListPage = () => {
   const [parents, setParents] = useState<ParentList[]>([]);
   const [loading, setLoading] = useState(true);
-  const [userRole, setUserRole] = useState<string | null>(null);
+  const [userRole] = useState<string | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [user, setUser] = useState<any | null>(null); // Store user data
-  
+  const [currentPage, setCurrentPage] = useState(1);
+
   useEffect(() => {
     const loggedInUser = JSON.parse(localStorage.getItem("user") || "{}");
-    
-    // Check if user data is already available to avoid unnecessary state update
-    if (loggedInUser?.id && !user) {
-      setUser(loggedInUser);
-    }
-
-    const storedRole = localStorage.getItem("role");
-    if (storedRole) {
-      setUserRole(storedRole);
-    }
-
+    setUser(loggedInUser);
+  
     const fetchParents = async () => {
       try {
         const data = await getAllParent();
-
-        // If the logged-in user is a teacher, filter parents whose children have this teacher's id as supervisorId
+  
         if (loggedInUser?.role === "TEACHER") {
-          const filteredTeacherParents = data.filter((parent) =>
-            parent.students.some((student) => student.supervisorId === loggedInUser.id)
+          // Fetch the full teacher profile using the user ID to get classId
+          const teacherProfile = await getTeacherById(loggedInUser.user.id);
+          const teacherClassId = teacherProfile?.classes?.[0]?.id;
+
+          console.log("teacher profile",teacherProfile)
+          console.log("teacher class id",teacherClassId)
+  
+          // Filter parents whose students belong to the teacher's class
+          const filteredParents = data.filter((parent) =>
+            parent.students?.some(
+              (student) => student.classId === teacherClassId
+            )
           );
-          setParents(filteredTeacherParents);
+  
+          setParents(filteredParents);
         } else if (loggedInUser?.role === "ADMIN") {
-          // Admin can see all parents
+          // Admin sees all parents
           setParents(data);
         }
       } catch (error) {
@@ -70,47 +75,97 @@ const ParentListPage = () => {
         setLoading(false);
       }
     };
-
-    fetchParents();
-  }, [user]); // Only re-run effect if 'user' state changes
   
-  const isAdmin = user?.role === "ADMIN";
+    fetchParents();
+  }, []);
 
-  const renderRow = (item: ParentList) => (
-    <tr
-      key={item.id}
-      className="border-b border-blue-100 even:bg-slate-100 text-sm hover:bg-red-50"
-    >
-      <td className="flex items-center gap-4 p-4">
-        <div className="flex flex-col">
-          <h3 className="font-semibold">{item.name}</h3>
-        </div>
-      </td>
-      <td className="hidden md:table-cell">
-        {item.students.length
-          ? item.students.map((student) => student.name).join(", ")
-          : "No students"}
-      </td>
-      <td className="hidden md:table-cell">{item.email}</td>
-      <td className="hidden md:table-cell">{item.phone}</td>
-      <td className="hidden md:table-cell">{item.address}</td>
-      <td className="px-4 py-2">
-        <div className="flex items-center gap-4">
-          <Link href={`/list/parents/${item.id}`}>
-            <button className="w-8 h-8 flex items-center justify-center rounded-full bg-blue-200">
-              <View width={18} />
-            </button>
-          </Link>
-          {isAdmin && (
-            <FormModal table="student" type="delete" id={item.id} />
-          )}
-        </div>
-      </td>
-    </tr>
+  const totalPages = Math.ceil(parents.length / ITEMS_PER_PAGE);
+  const paginatedParents = parents.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
   );
 
-  if (loading) return <p>Loading parents...</p>;
-  if (parents.length === 0) return <p>No parents found.</p>;
+  const handlePageChange = (newPage: number) => {
+    if (newPage >= 1 && newPage <= totalPages) {
+      setCurrentPage(newPage);
+    }
+  };
+  const renderRow = (item: ParentList) => {
+    const isTeacher = user?.role === "TEACHER";
+    const isAdmin = user?.role === "ADMIN";
+    return (
+      <tr
+        key={item.id}
+        className={`border-b border-blue-100 even:bg-slate-100 text-sm hover:bg-red-50 ${
+          isTeacher ? "" : ""
+        }`}
+      >
+        {isTeacher ? (
+          // Teacher view as a table row style
+          <>
+            <td className="flex items-center gap-4 p-4">
+              <div className="flex flex-col">
+                <h3 className="font-semibold">{item.name}</h3>
+              </div>
+            </td>
+            <td className="hidden md:table-cell">
+              {item.students.length
+                ? item.students.map((student) => student.name).join(", ")
+                : "No students"}
+            </td>
+            <td className="hidden md:table-cell">{item.email}</td>
+            <td className="hidden md:table-cell">{item.phone}</td>
+            <td className="hidden md:table-cell">{item.address}</td>
+            <td className="px-4 py-2">
+              <div className="flex items-center gap-4">
+                {" "}
+                {/* Increased gap for better spacing */}
+                <Link href={`/list/parents/${item.id}`}>
+                  <button className="w-8 h-8 flex items-center justify-center rounded-full bg-blue-200">
+                    <View width={18} />
+                  </button>
+                </Link>
+                {userRole === "ADMIN" && (
+                  <FormModal table="student" type="delete" id={item.id} />
+                )}
+              </div>
+            </td>
+          </>
+        ) : isAdmin ? (
+          // Admin view as a table row
+          <>
+            <td className="flex items-center gap-4 p-4">
+              <div className="flex flex-col">
+                <h3 className="font-semibold">{item.name}</h3>
+              </div>
+            </td>
+            <td className="hidden md:table-cell">
+              {item.students.length
+                ? item.students.map((student) => student.name).join(", ")
+                : "No students"}
+            </td>
+            <td className="hidden md:table-cell">{item.email}</td>
+            <td className="hidden md:table-cell">{item.phone}</td>
+            <td className="hidden md:table-cell">{item.address}</td>
+            <td className="px-4 py-2">
+              <div className="flex items-center gap-4">
+                {" "}
+                {/* Increased gap for better spacing */}
+                <Link href={`/list/parents/${item.id}`}>
+                  <button className="w-8 h-8 flex items-center justify-center rounded-full bg-blue-200">
+                    <View width={18} />
+                  </button>
+                </Link>
+                {userRole === "ADMIN" && (
+                  <FormModal table="student" type="delete" id={item.id} />
+                )}
+              </div>
+            </td>
+          </>
+        ) : null}
+      </tr>
+    );
+  };
 
   return (
     <div className="bg-white p-4 rounded-md flex-1 mt-0">
@@ -126,20 +181,34 @@ const ParentListPage = () => {
             <button className="w-8 h-8 flex items-center justify-center rounded-full bg-green-300">
               <ArrowDownNarrowWide size={22} color="black" />
             </button>
-            {userRole === "ADMIN" && (
+            {role === "admin" && (
               <FormModal table="parent" type="create" data={undefined} />
             )}
           </div>
         </div>
       </div>
 
-      {/* LIST */}
-      <div>
-        <Table columns={columns} renderRow={renderRow} data={parents} />
-      </div>
+      {loading ? (
+        <div className="text-center py-4">
+          <PulseLoader />
+        </div>
+      ) : user?.role === "ADMIN" || user?.role === "TEACHER" ? (
+        <Table
+          columns={columns}
+          renderRow={renderRow}
+          data={paginatedParents}
+        />
+      ) : (
+        <div className="mt-4">
+          {paginatedParents.map((student) => renderRow(student))}
+        </div>
+      )}
 
-      {/* PAGINATION (Dummy - Replace with real logic if needed) */}
-      <Pagination page={1} count={parents.length} />
+      <Pagination
+        page={currentPage}
+        count={parents.length}
+        onPageChange={handlePageChange}
+      />
     </div>
   );
 };

@@ -2,7 +2,8 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createEvents } from "@/services/eventsServices";
-
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 // Define Zod Schema
 const schema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -21,16 +22,17 @@ const EventsForm = ({ type = "create",data }) => {
   const onSubmit = async (FormData) => {
     try {
       await createEvents(FormData);
-      alert("Event created successfully!");
+      toast.success("Event created successfully!");
     } catch (error) {
       console.error(error);
-      alert("Failed to create event");
+      toast.error("Failed to create event");
     }
   };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 p-4">
       {/* Title Input */}
+       <ToastContainer position="top-right" autoClose={3000} />
       <div>
         <label className="block text-sm font-medium">Title</label>
         <input

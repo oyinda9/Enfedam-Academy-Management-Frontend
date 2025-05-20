@@ -7,7 +7,8 @@ import { getAllclass } from "@/services/classServices";
 import { getAllsubject } from "@/services/subjectService";
 import { getAllParent } from "@/services/parentService";
 import { createStudent } from "@/services/studentService";
-
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 // Define validation schema with Zod
 const schema = z.object({
   username: z.string().min(3).max(20),
@@ -83,60 +84,187 @@ const StudentForm = ({ type, data }) => {
 
       const result = await createStudent(studentData);
       console.log("Student created:", result);
-      alert("Student created successfully!");
+      toast.success("Student created successfully!");
     } catch (error) {
       console.error("Error creating student:", error);
-      alert("Failed to create student.");
+      toast.error("Failed to create student.");
     }
   });
 
   return (
-    <form className="p-6" onSubmit={onSubmit}>
-      <h1 className="text-xl font-semibold mb-6">
-        {type === "create" ? "CREATE NEW STUDENT" : "UPDATE STUDENT"}
+    <form className="p-6  h-[600px]  space-y-6" onSubmit={onSubmit}>
+       <ToastContainer
+              position="top-right"
+              autoClose={3000}
+              hideProgressBar={false}
+              newestOnTop={false}
+              closeOnClick
+              rtl={false}
+              pauseOnFocusLoss
+              draggable
+              pauseOnHover
+            />
+      <h1 className="text-2xl font-bold text-gray-800 sticky top-0 bg-white z-10 pb-4">
+        {type === "create" ? "Create New Student" : "Update Student"}
       </h1>
 
-      <div className="grid grid-cols-3 gap-6 mb-6">
-        <InputField label="Username" name="username" register={register} errors={errors} />
-        <InputField label="Email" name="email" type="email" register={register} errors={errors} />
-        <InputField label="Phone" name="phone" register={register} errors={errors} />
-        <InputField label="First Name" name="name" register={register} errors={errors} />
-        <InputField label="Last Name" name="surname" register={register} errors={errors} />
-        <InputField label="Address" name="address" register={register} errors={errors} />
-        <InputField label="Birthday" name="birthday" type="date" register={register} errors={errors} />
+      {/* Section: Personal Info */}
+      <div className="space-y-4 border border-gray-200 p-4 rounded-md">
+        <h2 className="text-lg font-semibold text-gray-700">
+          Personal Information
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <InputField
+            label="Username"
+            name="username"
+            register={register}
+            errors={errors}
+          />
+          <InputField
+            label="Email"
+            name="email"
+            type="email"
+            register={register}
+            errors={errors}
+          />
+          <InputField
+            label="Phone"
+            name="phone"
+            register={register}
+            errors={errors}
+          />
+          <InputField
+            label="First Name"
+            name="name"
+            register={register}
+            errors={errors}
+          />
+          <InputField
+            label="Last Name"
+            name="surname"
+            register={register}
+            errors={errors}
+          />
+          <InputField
+            label="Address"
+            name="address"
+            register={register}
+            errors={errors}
+          />
+          <InputField
+            label="Birthday"
+            name="birthday"
+            type="date"
+            register={register}
+            errors={errors}
+          />
+        </div>
       </div>
 
-      {/* Select Dropdowns */}
-      <div className="grid grid-cols-3 gap-6 mb-6">
-        <SelectField label="Sex" name="sex" options={[{ id: "MALE", name: "Male" }, { id: "FEMALE", name: "Female" }]} register={register} errors={errors} isNumber={false} />
-
-        <SelectField label="Blood Type" name="bloodType" options={[
-          { id: "A+", name: "A+" }, { id: "A-", name: "A-" }, { id: "B+", name: "B+" },
-          { id: "B-", name: "B-" }, { id: "O+", name: "O+" }, { id: "O-", name: "O-" },
-          { id: "AB+", name: "AB+" }, { id: "AB-", name: "AB-" }
-        ]} register={register} errors={errors} isNumber={false} />
-
-        <SelectField label="Class" name="classId" options={classes} register={register} errors={errors} isNumber={true} />
-
-        <SelectField label="Parent" name="parentId" options={parents} register={register} errors={errors} />
-
-        <MultiSelectField label="Subjects" name="subjectIds" options={subjects} register={register} setValue={setValue} watch={watch} errors={errors} />
-        <MultiSelectField label="Lessons" name="lessonIds" options={lessons} register={register} setValue={setValue} watch={watch} errors={errors} />
+      {/* Section: Academic Info */}
+      <div className="space-y-4 border border-gray-200 p-4 rounded-md">
+        <h2 className="text-lg font-semibold text-gray-700">
+          Academic Information
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <SelectField
+            label="Class"
+            name="classId"
+            options={classes}
+            register={register}
+            errors={errors}
+            isNumber={true}
+          />
+          <MultiSelectField
+            label="Subjects"
+            name="subjectIds"
+            options={subjects}
+            register={register}
+            setValue={setValue}
+            watch={watch}
+            errors={errors}
+          />
+          <MultiSelectField
+            label="Lessons"
+            name="lessonIds"
+            options={lessons}
+            register={register}
+            setValue={setValue}
+            watch={watch}
+            errors={errors}
+          />
+        </div>
       </div>
 
-      {/* Profile Image Upload */}
-      <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700">Profile Image</label>
-        <div className="flex gap-2">
-          <input type="file" {...register("img")} className="form-input" />
-          <CloudUpload className="rounded-md" />
+      {/* Section: Other Info */}
+      <div className="space-y-4 border border-gray-200 p-4 rounded-md">
+        <h2 className="text-lg font-semibold text-gray-700">Other Details</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <SelectField
+            label="Sex"
+            name="sex"
+            options={[
+              { id: "MALE", name: "Male" },
+              { id: "FEMALE", name: "Female" },
+            ]}
+            register={register}
+            errors={errors}
+            isNumber={false}
+          />
+          <SelectField
+            label="Blood Type"
+            name="bloodType"
+            options={[
+              { id: "A+", name: "A+" },
+              { id: "A-", name: "A-" },
+              { id: "B+", name: "B+" },
+              { id: "B-", name: "B-" },
+              { id: "O+", name: "O+" },
+              { id: "O-", name: "O-" },
+              { id: "AB+", name: "AB+" },
+              { id: "AB-", name: "AB-" },
+            ]}
+            register={register}
+            errors={errors}
+            isNumber={false}
+          />
+          <SelectField
+            label="Parent"
+            name="parentId"
+            options={parents}
+            register={register}
+            errors={errors}
+          />
+        </div>
+      </div>
+
+      {/* Section: Image Upload */}
+      <div className="space-y-2 border border-gray-200 p-4 rounded-md">
+        <label className="block text-sm font-medium text-gray-700">
+          Profile Image
+        </label>
+        <div className="flex items-center space-x-4">
+          <input
+            type="file"
+            {...register("img")}
+            className="border border-gray-300 py-2 px-3 rounded-md"
+          />
+          <CloudUpload className="w-6 h-6 text-gray-600" />
         </div>
         <ErrorMessage errors={errors} name="img" />
-      </div>
 
-      <button type="submit" className="bg-blue-700 text-white p-3 rounded-md hover:bg-blue-800 w-full">
-        {type === "create" ? "Create" : "Update"}
-      </button>
+           {/* Submit Button */}
+      
+      </div>
+      <div className="w-[500px] mb-6">
+        <button
+          type="submit"
+          className=" mb-6 px-4 py-2 bg-blue-700 text-white text-lg font-medium  rounded-md hover:bg-blue-800 transition-colors"
+        >
+          {type === "create" ? "Create" : "Update"}
+        </button>
+      </div>
+   
     </form>
   );
 };
@@ -145,18 +273,38 @@ const StudentForm = ({ type, data }) => {
 const InputField = ({ label, name, type = "text", register, errors }) => (
   <div>
     <label className="block text-sm font-medium text-gray-700">{label}</label>
-    <input type={type} {...register(name)} className="form-input border border-black py-2 rounded-md px-2" />
+    <input
+      type={type}
+      {...register(name)}
+      className="form-input border border-black py-2 rounded-md px-2 w-[150px] gap-4"
+    />
     <ErrorMessage errors={errors} name={name} />
   </div>
 );
 
 // Select Field Component
-const SelectField = ({ label, name, options, register, errors, isNumber = false }) => (
+const SelectField = ({
+  label,
+  name,
+  options,
+  register,
+  errors,
+  isNumber = false,
+}) => (
   <div>
-    <label className="text-sm font-medium text-gray-700 flex flex-col space-y-1">{label}</label>
-    <select {...register(name, isNumber ? { valueAsNumber: true } : {})} className="form-input border border-black py-2 rounded-md px-2 w-[200px]">
+    <label className="text-sm font-medium text-gray-700 flex flex-col space-y-1">
+      {label}
+    </label>
+    <select
+      {...register(name, isNumber ? { valueAsNumber: true } : {})}
+      className="form-input border border-black py-2 rounded-md px-2 w-[150px] gap-4"
+    >
       <option value="">Select</option>
-      {options.map((option) => <option key={option.id} value={option.id}>{option.name}</option>)}
+      {options.map((option) => (
+        <option key={option.id} value={option.id}>
+          {option.name}
+        </option>
+      ))}
     </select>
     <ErrorMessage errors={errors} name={name} />
   </div>
@@ -164,20 +312,45 @@ const SelectField = ({ label, name, options, register, errors, isNumber = false 
 
 // Multi-Select Field Component
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const MultiSelectField = ({ label, name, options, register, setValue, watch, errors }) => {
+const MultiSelectField = ({
+  label,
+  name,
+  options,
+  register,
+  setValue,
+  watch,
+  errors,
+}) => {
   const selectedValues = watch(name) || [];
 
   return (
     <div>
       <label className="text-sm font-medium text-gray-700">{label}</label>
-      <select multiple value={selectedValues} onChange={(e) => setValue(name, Array.from(e.target.selectedOptions, o => Number(o.value)))} className="form-input border border-black py-2 rounded-md px-2">
-        {options.map((option) => <option key={option.id} value={option.id}>{option.name}</option>)}
+      <select
+        multiple
+        value={selectedValues}
+        onChange={(e) =>
+          setValue(
+            name,
+            Array.from(e.target.selectedOptions, (o) => Number(o.value))
+          )
+        }
+        className="form-input border border-black py-2 rounded-md px-2"
+      >
+        {options.map((option) => (
+          <option key={option.id} value={option.id}>
+            {option.name}
+          </option>
+        ))}
       </select>
       <ErrorMessage errors={errors} name={name} />
     </div>
   );
 };
 
-const ErrorMessage = ({ errors, name }) => errors[name] ? <p className="text-xs text-red-600">{errors[name]?.message}</p> : null;
+const ErrorMessage = ({ errors, name }) =>
+  errors[name] ? (
+    <p className="text-xs text-red-600">{errors[name]?.message}</p>
+  ) : null;
 
 export default StudentForm;

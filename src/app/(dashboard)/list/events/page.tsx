@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import TableSearch from "@/components/TableSearch";
-import { Trash2, Filter, ArrowDownNarrowWide } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import Pagination from "@/components/Pagination";
 import FormModal from "@/components/FormModal";
 import { getAllEvents } from "@/services/eventsServices";
@@ -57,6 +57,7 @@ const EventsListPage: React.FC = () => {
   return (
     <div className="bg-white p-4 rounded-md flex-1 mt-0">
       {/* TOP SECTION */}
+  
       <div className="flex items-center justify-between">
         <h1 className="hidden md:block text-lg font-semibold">All Events</h1>
         <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">

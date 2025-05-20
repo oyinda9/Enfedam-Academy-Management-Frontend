@@ -15,7 +15,6 @@ const AdminPage = () => {
     students: 0,
     teachers: 0,
     parents: 0,
-  
   });
 
   useEffect(() => {
@@ -24,13 +23,11 @@ const AdminPage = () => {
         const students = await getAllStudents();
         const teachers = await getAllTeachers();
         const parents = await getAllParent();
-       
 
         setTotals({
           students: students.length || 0,
           teachers: teachers.length || 0,
           parents: parents.length || 0,
-          
         });
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -45,11 +42,10 @@ const AdminPage = () => {
       {/* LEFT */}
       <div className="w-full lg:w-2/3 flex flex-col gap-12">
         {/* USER CARDS */}
-        <div className="flex flex-wrap justify-center sm:justify-between gap-4">
+        <div className="flex space-x-4">
           <UserCard type="student" count={totals.students} />
           <UserCard type="teacher" count={totals.teachers} />
           <UserCard type="parent" count={totals.parents} />
-
         </div>
 
         {/* MIDDLE CHARTS */}

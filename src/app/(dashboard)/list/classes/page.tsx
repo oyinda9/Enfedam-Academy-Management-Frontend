@@ -6,7 +6,9 @@ import { Trash2, Filter, ArrowDownNarrowWide } from "lucide-react";
 import Pagination from "@/components/Pagination";
 import Table from "@/components/Table";
 import FormModal from "@/components/FormModal";
-import { getAllclass } from "@/services/classServices";
+import { getAllclass, DeleteClassById } from "@/services/classServices";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 interface ClassList {
   id: string;
@@ -58,6 +60,70 @@ const ClassesListPage: React.FC = () => {
     }
   }, []);
 
+  const handleDelete = async (classId: string) => {
+    const loadingToast = toast.loading("Please wait... Deleting class...", {
+      position: "top-right",
+      autoClose: false, // Set to false to keep it visible until the operation finishes
+      closeButton: true,
+      draggable: true,
+      theme: "colored",
+    });
+
+    try {
+      // API call to delete the class
+      await DeleteClassById(classId);
+      // Dismiss the loading toast first
+      toast.dismiss(loadingToast);
+
+      // Then show a new success toast
+      toast.success("Class deleted successfully.", {
+        position: "top-right",
+        autoClose: 5000,
+        theme: "colored",
+        style: {
+          backgroundColor: "#4CAF50",
+          color: "white",
+          fontWeight: "bold",
+        },
+      });
+
+      // Update the class state to reflect the deleted class
+      setClass((prevClasses) => prevClasses.filter((c) => c.id !== classId));
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      console.error("Failed to delete class:", error);
+
+      const errorDetails = error?.response?.data?.details || "";
+
+      let errorMessage =
+        "An unexpected error occurred while deleting the class.";
+
+      if (errorDetails.includes("Foreign key constraint")) {
+        errorMessage =
+          "Cannot delete class: there are students still assigned to it. Please remove or reassign them first.";
+      } else if (error?.response?.data?.error) {
+        errorMessage = `Error: ${error.response.data.error}`;
+      } else if (error?.message === "Network Error") {
+        errorMessage = "Network error. Please check your connection.";
+      }
+
+      // Remove the loading toast
+      toast.dismiss(loadingToast);
+
+      // Show a new, separate error toast
+      toast.error(errorMessage, {
+        position: "top-right",
+        autoClose: 5000,
+        theme: "colored",
+        style: {
+          backgroundColor: "#F44336",
+          color: "white",
+          fontWeight: "bold",
+        },
+      });
+    }
+  };
+
   // Calculate pagination
   const totalPages = Math.ceil(classes.length / ITEMS_PER_PAGE);
   const paginatedClasses = classes.slice(
@@ -80,13 +146,18 @@ const ClassesListPage: React.FC = () => {
       <td className="p-4">{item.name}</td>
       <td className="hidden md:table-cell">{item.capacity}</td>
       <td className="hidden md:table-cell">
-        {item.supervisor?.name + " " + item.supervisor?.surname ||
-          "No Supervisor"}
+        {item.supervisor
+          ? `${item.supervisor.name} ${item.supervisor.surname}`
+          : "No Supervisor"}
       </td>
       <td>
-        <div className="flex items-center ">
+        <div className="flex items-center justify-center">
           {userRole === "ADMIN" && (
-            <button className="w-7 h-7 flex items-center justify-center rounded-full bg-red-200">
+            <button
+              onClick={() => handleDelete(item.id)}
+              className="w-7 h-7 flex items-center justify-center rounded-full bg-red-200 hover:bg-red-300 transition-colors"
+              title="Delete Class"
+            >
               <Trash2 width={16} />
             </button>
           )}
@@ -97,6 +168,7 @@ const ClassesListPage: React.FC = () => {
 
   return (
     <div className="bg-white p-4 rounded-md flex-1 mt-0">
+      <ToastContainer />
       {/* TOP SECTION */}
       <div className="flex items-center justify-between">
         <h1 className="hidden md:block text-lg font-semibold">All Classes</h1>

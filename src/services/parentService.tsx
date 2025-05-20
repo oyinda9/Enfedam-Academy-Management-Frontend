@@ -12,7 +12,7 @@ interface ParentFormData {
   address: string;
 }
 
-export const createParent = async (parentData: ParentFormData) => {
+export const createParent = async ( parentData: ParentFormData) => {
   try {
     const token = localStorage.getItem("token");
     console.log("Using token:", token); // Debugging line

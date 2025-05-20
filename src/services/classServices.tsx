@@ -51,4 +51,14 @@ export const getAllclass = async () => {
       console.error("Error fetching parent:", error);
       throw error;
     }
-  }
+  };
+
+  export const DeleteClassById = async (id: string) => {
+    try {
+      const response = await axios.delete(`${API_URL}/class/classes/${id}`);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching parent:", error);
+      throw error;
+    }
+  };

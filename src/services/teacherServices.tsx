@@ -107,3 +107,37 @@ export const createTeacher = async (teacherData: TeacherFormData) => {
     );
   }
 };
+
+interface AssignFormData {
+  teacherId: string;
+  subjectIds: number[];
+  classes: number[];
+}
+export const assign_classes_subjects_Teacher = async (
+  AssignData: AssignFormData
+) => {
+  try {
+    const token = localStorage.getItem("token");
+    console.log("Using token:", token); // Debugging line
+
+    if (!token) throw new Error("Unauthorized: No token provided");
+
+    const response = await axios.post(
+      `${API_URL}/teachers/assign-classes-subjects`,
+      AssignData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    return response.data;
+  } catch (error: any) {
+    console.error("Error creating teacher:", error?.response?.data || error);
+    throw new Error(
+      error?.response?.data?.message || "Failed to create teacher"
+    );
+  }
+};
