@@ -75,16 +75,19 @@ export default function ModernResultUpload() {
   const [scores, setScores] = useState<Record<number, ResultData>>({});
   const [allResults, setAllResults] = useState<CumulativeResult[]>([]);
   const [userRole, setUserRole] = useState<string | null>(null);
-  const [viewMode, setViewMode] = useState<"form" | "results" | "studentResults">(
-    localStorage.getItem("role") === "USER" ? "results" : "form"
-  );
+  const [viewMode, setViewMode] = useState<"form" | "results" | "studentResults">("form");
+
   const [loading, setLoading] = useState({
     classLoading: false,
     studentLoading: false,
     submitting: false,
     resultsLoading: false,
   });
-
+  useEffect(() => {
+    const role = localStorage.getItem("role");
+    setViewMode(role === "USER" ? "results" : "form");
+  }, []);
+  
   // Fetch classes on mount and handle user role
   useEffect(() => {
     const fetchClasses = async () => {
@@ -144,11 +147,13 @@ export default function ModernResultUpload() {
     try {
       const classData = await getClassById(classId);
       const studentsWithSubjects = await Promise.all(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         classData?.students?.map(async (student: any) => {
           try {
             const studentData = await getStudentById(student.id);
             return {
               ...student,
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               subjects: studentData?.subject?.map((subj: any) => ({
                 id: subj.id,
                 name: subj.name,
