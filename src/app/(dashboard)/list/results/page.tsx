@@ -2,10 +2,10 @@
 import React, { useEffect, useState } from "react";
 import { createResult, getAllCummulativeResult } from "@/services/examServices";
 import { getAllclass, getClassById } from "@/services/classServices";
-import { getStudentById } from "@/services/studentService";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Link from "next/link";
+import { getStudentById } from "@/services/studentService";
 
 interface Student {
   id: string;
@@ -47,7 +47,6 @@ interface CumulativeResult {
 }
 
 export default function ModernResultUpload() {
-  // State management
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [classes, setClasses] = useState<any[]>([]);
   const [selectedClassId, setSelectedClassId] = useState("");
@@ -68,75 +67,78 @@ export default function ModernResultUpload() {
     resultsLoading: false,
   });
 
+  // Set user role and view mode
   useEffect(() => {
-    // Only run this code on the client side
     if (typeof window !== "undefined") {
       const role = localStorage.getItem("role");
       setUserRole(role || "");
-      setViewMode(role === "USER" ? "results" : "form");
+      if (role === "USER") {
+        setViewMode("results");
+        loadAllResults(role); // load results for USER
+      } else {
+        setViewMode("form");
+      }
     }
   }, []);
 
-  // Fetch classes on mount and handle user role
+  // Fetch all classes depending on user role
   useEffect(() => {
     const fetchClasses = async () => {
       setLoading((prev) => ({ ...prev, classLoading: true }));
-
       try {
         const data = await getAllclass();
 
         if (typeof window !== "undefined") {
-          const storedRole = localStorage.getItem("role");
-          setUserRole(storedRole || "");
+          const role = localStorage.getItem("role");
+          const userId = localStorage.getItem("userId");
+          const childUserId = localStorage.getItem("childUserId");
 
-          if (storedRole === "STUDENT") {
-            const currentUserId = localStorage.getItem("userId");
+          if (role === "STUDENT") {
             setClasses(
-              data.filter((cls) =>
-                cls?.studentIds?.includes(currentUserId ?? "")
-              )
+              data.filter((cls) => cls?.studentIds?.includes(userId ?? ""))
             );
-          } else if (storedRole === "USER") {
-            const childUserId = localStorage.getItem("childUserId");
+          } else if (role === "USER") {
             setClasses(
               data.filter((cls) => cls?.studentIds?.includes(childUserId ?? ""))
             );
-            loadAllResults(); // Only runs if USER
           } else {
             setClasses(data);
           }
         }
       } catch (error) {
         toast.error("Failed to load classes");
-        console.error("Error:", error);
+        console.error("Class load error:", error);
       } finally {
         setLoading((prev) => ({ ...prev, classLoading: false }));
       }
     };
 
-    // Only fetch classes on client side
     if (typeof window !== "undefined") {
       fetchClasses();
     }
   }, []);
 
-  // Load all results with filtering for USER role
-  const loadAllResults = async () => {
+  // Load all results, filtered by role
+  const loadAllResults = async (roleFromLocal?: string) => {
     setLoading((prev) => ({ ...prev, resultsLoading: true }));
     try {
       const results = await getAllCummulativeResult();
 
-      if (userRole === "USER") {
+      if (typeof window !== "undefined") {
+        const role = roleFromLocal || localStorage.getItem("role");
         const childUserId = localStorage.getItem("childUserId");
-        setAllResults(
-          results.filter((result) => result.studentId === childUserId)
-        );
-      } else {
-        setAllResults(results);
+
+        if (role === "USER") {
+          setAllResults(
+            results.filter((result) => result.studentId === childUserId)
+          );
+        } else {
+          setAllResults(results);
+        }
       }
     } catch (error) {
       toast.error("Failed to load results");
-      console.error("Error:", error);
+      console.error("Result load error:", error);
     } finally {
       setLoading((prev) => ({ ...prev, resultsLoading: false }));
     }
