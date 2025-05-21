@@ -7,18 +7,20 @@ import { z } from "zod";
 import { useRouter } from "next/navigation";
 import authService from "../services/authServices";
 import { toast, ToastContainer } from "react-toastify";
+import Image from "next/image";
+import { FiEye, FiEyeOff } from "react-icons/fi";
 import "react-toastify/dist/ReactToastify.css";
 
-// Validation Schema (Handles Admin vs. Other Users)
+// Validation Schema
 const loginSchema = z
   .object({
     identifier: z.string().min(3, "Enter your email or username"),
-    passwordOrSurname: z.string().optional(), // Optional for non-admins
+    passwordOrSurname: z.string().optional(),
   })
   .refine(
     (data) => {
       if (!data.identifier.includes("@") && !data.passwordOrSurname) {
-        return false; // If not an email and password is missing → Invalid
+        return false;
       }
       return true;
     },
@@ -40,44 +42,20 @@ const Login = () => {
   });
 
   const [loginError, setLoginError] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
 
   const onSubmit = async (data: LoginFormValues) => {
-    console.log("onSubmit function started", data);
     try {
       setLoginError(null);
       const passwordOrSurname = data.passwordOrSurname ?? "";
+      const response = await authService.login(data.identifier, passwordOrSurname);
 
-      console.log("Before API Call");
-      const response = await authService.login(
-        data.identifier,
-        passwordOrSurname
-      );
-      console.log("API Response:", response);
-
-      // ✅ Toast Success Notification
-      toast.success(response.message, {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
-
-      console.log("After Toast:", response.message);
+      toast.success(response.message, { position: "top-right", autoClose: 3000 });
 
       if (typeof window !== "undefined") {
-        console.log("Saving to localStorage:", JSON.stringify(response));
         localStorage.setItem("user", JSON.stringify(response));
-        console.log("Stored user data:", localStorage.getItem("user"));
-      } else {
-        console.warn("localStorage is not available");
       }
-
-      const { role } = response;
-      console.log("User role:", role);
 
       const roleRoutes: Record<string, string> = {
         ADMIN: "/admin",
@@ -86,85 +64,129 @@ const Login = () => {
         USER: "/parent",
       };
 
-      if (roleRoutes[role]) {
-        console.log("Redirecting to:", roleRoutes[role]);
-        router.push(roleRoutes[role]);
+      if (roleRoutes[response.role]) {
+        router.push(roleRoutes[response.role]);
       } else {
         setLoginError("Unauthorized role");
       }
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
-      console.error("Login failed:", error);
-      setLoginError(
-        error.response?.data?.error || "Invalid credentials. Please try again."
-      );
-
-      toast.error("Login failed. Please try again.", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
+      setLoginError(error.response?.data?.error || "Invalid credentials. Please try again.");
+      toast.error("Login failed. Please try again.", { position: "top-right", autoClose: 3000 });
     }
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100">
-      <ToastContainer /> {/* Ensure ToastContainer is present */}
-      <div className="bg-white shadow-lg rounded-lg p-8 w-96">
-        <h2 className="text-2xl font-semibold text-center text-gray-800">
-          Login
-        </h2>
+    <div
+      className="relative min-h-screen bg-cover bg-center"
+      style={{ backgroundImage: "url('/enfedam.jpg')" }}
+    >
+      {/* Overlay */}
+      <div className="absolute inset-0 bg-black bg-opacity-70"></div>
 
-        {loginError && (
-          <p className="text-red-500 text-sm text-center mt-2">{loginError}</p>
-        )}
+      {/* Centered form container */}
+      <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-4">
+        <ToastContainer />
 
-        <form onSubmit={handleSubmit(onSubmit)} className="mt-6">
-          {/* Identifier Field (Email or Username) */}
-          <div className="mb-4">
-            <label className="block text-gray-700">Email or Username</label>
-            <input
-              type="text"
-              {...register("identifier")}
-              className="w-full p-2 border rounded-md mt-1"
-              placeholder="Enter email or username"
+        <div className="bg-white bg-opacity-95 shadow-xl rounded-xl p-10 max-w-md w-full backdrop-blur-sm">
+          {/* Logo */}
+          <div className="flex justify-center mb-8">
+            <Image
+              src="/enfedam-logo.png"
+              alt="Login Illustration"
+              width={120}
+              height={140}
+              className="rounded-full shadow-md"
             />
-            {errors.identifier && (
-              <p className="text-red-500 text-sm">
-                {errors.identifier.message}
-              </p>
-            )}
           </div>
 
-          {/* Password/Surname Field (Required for Admins, Optional for Others) */}
-          <div className="mb-4">
-            <label className="block text-gray-700">Password / Surname</label>
-            <input
-              type="password"
-              {...register("passwordOrSurname")}
-              className="w-full p-2 border rounded-md mt-1"
-              placeholder="Enter your password or surname"
-            />
-            {errors.passwordOrSurname && (
-              <p className="text-red-500 text-sm">
-                {errors.passwordOrSurname.message}
-              </p>
-            )}
-          </div>
+          {/* Heading */}
+          <h2 className="text-4xl font-extrabold text-center text-gray-900 mb-6">
+            Welcome Back
+          </h2>
 
-          {/* Submit Button */}
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded disabled:bg-gray-400"
-          >
-            {isSubmitting ? "Logging in..." : "Login"}
-          </button>
-        </form>
+          {/* Info text */}
+          <p className="mb-6 text-center text-sm text-gray-600 italic leading-relaxed">
+            Admins should log in with{" "}
+            <span className="font-semibold text-gray-800">username and password</span>.
+            <br />
+            Parents, Teachers, and Students should log in with{" "}
+            <span className="font-semibold text-gray-800">email and surname</span>.
+          </p>
+
+          {/* Error message example */}
+          {/* {loginError && (
+            <p className="text-red-600 text-center mb-4 font-medium">{loginError}</p>
+          )} */}
+
+          {/* Form */}
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+            {/* Identifier */}
+            <div>
+              <label
+                htmlFor="identifier"
+                className="block text-gray-700 font-semibold mb-2"
+              >
+                Email / Username
+              </label>
+              <input
+                id="identifier"
+                type="text"
+                {...register("identifier")}
+                placeholder="Enter email or username"
+                className={`w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 transition ${
+                  errors.identifier
+                    ? "border-red-500 focus:ring-red-500"
+                    : "border-gray-300 focus:ring-green-500"
+                }`}
+              />
+              {errors.identifier && (
+                <p className="text-red-500 text-sm mt-1">{errors.identifier.message}</p>
+              )}
+            </div>
+
+            {/* Password / Surname with eye icon */}
+            <div className="relative">
+              <label
+                htmlFor="passwordOrSurname"
+                className="block text-gray-700 font-semibold mb-2"
+              >
+                Password / Surname
+              </label>
+              <input
+                id="passwordOrSurname"
+                type={showPassword ? "text" : "password"}
+                {...register("passwordOrSurname")}
+                placeholder="Enter your password or surname"
+                className={`w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 transition ${
+                  errors.passwordOrSurname
+                    ? "border-red-500 focus:ring-red-500"
+                    : "border-gray-300 focus:ring-green-500"
+                }`}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 bottom-0  text-gray-500 hover:text-gray-800 focus:outline-none"
+                tabIndex={-1}
+                aria-label={showPassword ? "Hide password" : "Show password"}
+              >
+                {showPassword ? <FiEyeOff size={22} /> : <FiEye size={22} />}
+              </button>
+              {errors.passwordOrSurname && (
+                <p className="text-red-500 text-sm mt-1">{errors.passwordOrSurname.message}</p>
+              )}
+            </div>
+
+            {/* Submit button */}
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg disabled:bg-gray-400 transition"
+            >
+              {isSubmitting ? "Logging in..." : "Login"}
+            </button>
+          </form>
+        </div>
       </div>
     </div>
   );
