@@ -132,22 +132,22 @@ export default function ParentDashboard() {
           <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
             <div className="bg-gradient-to-r from-blue-100 to-blue-200 p-6 rounded-lg mb-4">
               <h1 className="text-3xl font-bold text-gray-800 mb-2">
-                🧾 Upload and Track Your Ward's School Fee Payment
+                🧾 Upload and Track Your Wards School Fee Payment
               </h1>
               <ul className="list-disc list-inside text-gray-700 space-y-2">
                 <li>
-                  <strong>Make a Payment:</strong> First, complete your ward's
+                  <strong>Make a Payment:</strong> First, complete your wards
                   school fee payment through your preferred bank or mobile
                   platform.
                 </li>
                 <li>
                   <strong>Upload the Payment Receipt:</strong> Return to this
                   platform and go to the{" "}
-                  <span className="font-semibold">"Upload Receipt"</span>{" "}
+                  <span className="font-semibold">Upload Receipt</span>{" "}
                   section. Select the student you’re making the payment for,
                   upload a clear image of your receipt, and click{" "}
                   <span className="text-blue-600 font-semibold">
-                    "Upload Receipt"
+                    Upload Receipt
                   </span>
                   .
                 </li>
@@ -161,7 +161,7 @@ export default function ParentDashboard() {
                   appear below. Please allow a short time for the school to
                   verify your payment — the status will change to{" "}
                   <span className="text-green-600 font-semibold">
-                    "Verified"
+                    Verified
                   </span>{" "}
                   once confirmed.
                 </li>

@@ -84,10 +84,13 @@ export default function ModernResultUpload() {
     resultsLoading: false,
   });
   useEffect(() => {
-    const role = localStorage.getItem("role");
-    setViewMode(role === "USER" ? "results" : "form");
+    // Only run this code on the client side
+    if (typeof window !== 'undefined') {
+      const role = localStorage.getItem("role");
+      setUserRole(role);
+      setViewMode(role === "USER" ? "results" : "form");
+    }
   }, []);
-  
   // Fetch classes on mount and handle user role
   useEffect(() => {
     const fetchClasses = async () => {

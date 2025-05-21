@@ -40,24 +40,29 @@ const ClassesListPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [userRole, setUserRole] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
+  // 👇 Move this outside so it's accessible globally within the component
+  const fetchClasses = async () => {
+    try {
+      const data = await getAllclass();
+      setClass(data);
+    } catch (error) {
+      console.error("Failed to load classes", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchClasses = async () => {
-      try {
-        const data = await getAllclass();
-        setClass(data);
-      } catch (error) {
-        console.error("Failed to load classes", error);
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchClasses();
 
     const storedRole = localStorage.getItem("role");
     if (storedRole) {
       setUserRole(storedRole);
     }
+  }, []);
+
+  useEffect(() => {
+    fetchClasses(); // 🔁 This will now work
   }, []);
 
   const handleDelete = async (classId: string) => {
@@ -89,7 +94,7 @@ const ClassesListPage: React.FC = () => {
 
       // Update the class state to reflect the deleted class
       setClass((prevClasses) => prevClasses.filter((c) => c.id !== classId));
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       console.error("Failed to delete class:", error);
 

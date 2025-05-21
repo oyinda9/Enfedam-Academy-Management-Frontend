@@ -41,7 +41,7 @@ export const uploadReceipt = async (
 
 export const verifyPayment = async (paymentId: string): Promise<any> => {
   try {
-    const response = await axios.patch(`${API_URL}/verify/${paymentId}`);
+    const response = await axios.patch(`${API_URL}/payment/verify/${paymentId}`);
     return response.data;
   } catch (error: any) {
     throw new Error(error.response?.data?.error || "Failed to verify payment");
@@ -54,7 +54,7 @@ export const getPaymentSummary = async (): Promise<{
   notPaid: any[];
 }> => {
   try {
-    const response = await axios.get(`${API_URL}/payments/summary`);
+    const response = await axios.get(`${API_URL}/payment/summary`);
     return response.data;
   } catch (error: any) {
     throw new Error(
