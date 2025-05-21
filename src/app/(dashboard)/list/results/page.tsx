@@ -1,9 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import {
-  createResult,
-  getAllCummulativeResult,
-} from "@/services/examServices";
+import { createResult, getAllCummulativeResult } from "@/services/examServices";
 import { getAllclass, getClassById } from "@/services/classServices";
 import { getStudentById } from "@/services/studentService";
 import { toast, ToastContainer } from "react-toastify";
@@ -34,22 +31,6 @@ interface ResultData {
   total: number;
 }
 
-interface StudentResult {
-  id: string;
-  studentId: string;
-  studentName: string;
-  studentSurname: string;
-  subjectId: number;
-  subjectName: string;
-  examScore: number;
-  assignment: number;
-  classwork: number;
-  midterm: number;
-  attendance: number;
-  total: number;
-  createdAt: string;
-}
-
 interface CumulativeResult {
   studentId: string;
   studentName: string;
@@ -67,6 +48,7 @@ interface CumulativeResult {
 
 export default function ModernResultUpload() {
   // State management
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [classes, setClasses] = useState<any[]>([]);
   const [selectedClassId, setSelectedClassId] = useState("");
   const [students, setStudents] = useState<Student[]>([]);
@@ -75,7 +57,9 @@ export default function ModernResultUpload() {
   const [scores, setScores] = useState<Record<number, ResultData>>({});
   const [allResults, setAllResults] = useState<CumulativeResult[]>([]);
   const [userRole, setUserRole] = useState<string | null>(null);
-  const [viewMode, setViewMode] = useState<"form" | "results" | "studentResults">("form");
+  const [viewMode, setViewMode] = useState<
+    "form" | "results" | "studentResults"
+  >("form");
 
   const [loading, setLoading] = useState({
     classLoading: false,
@@ -83,54 +67,70 @@ export default function ModernResultUpload() {
     submitting: false,
     resultsLoading: false,
   });
+
   useEffect(() => {
     // Only run this code on the client side
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       const role = localStorage.getItem("role");
-      setUserRole(role);
+      setUserRole(role || "");
       setViewMode(role === "USER" ? "results" : "form");
     }
   }, []);
+
   // Fetch classes on mount and handle user role
   useEffect(() => {
     const fetchClasses = async () => {
-      setLoading(prev => ({ ...prev, classLoading: true }));
+      setLoading((prev) => ({ ...prev, classLoading: true }));
 
       try {
         const data = await getAllclass();
-        const storedRole = localStorage.getItem("role");
-        setUserRole(storedRole);
 
-        if (storedRole === "STUDENT") {
-          const currentUserId = localStorage.getItem("userId");
-          setClasses(data.filter(cls => cls?.studentIds?.includes(currentUserId) ?? []));
-        } else if (storedRole === "USER") {
-          const childUserId = localStorage.getItem("childUserId");
-          setClasses(data.filter(cls => cls?.studentIds?.includes(childUserId) ?? []));
-          loadAllResults();
-        } else {
-          setClasses(data);
+        if (typeof window !== "undefined") {
+          const storedRole = localStorage.getItem("role");
+          setUserRole(storedRole || "");
+
+          if (storedRole === "STUDENT") {
+            const currentUserId = localStorage.getItem("userId");
+            setClasses(
+              data.filter((cls) =>
+                cls?.studentIds?.includes(currentUserId ?? "")
+              )
+            );
+          } else if (storedRole === "USER") {
+            const childUserId = localStorage.getItem("childUserId");
+            setClasses(
+              data.filter((cls) => cls?.studentIds?.includes(childUserId ?? ""))
+            );
+            loadAllResults(); // Only runs if USER
+          } else {
+            setClasses(data);
+          }
         }
       } catch (error) {
         toast.error("Failed to load classes");
         console.error("Error:", error);
       } finally {
-        setLoading(prev => ({ ...prev, classLoading: false }));
+        setLoading((prev) => ({ ...prev, classLoading: false }));
       }
     };
 
-    fetchClasses();
+    // Only fetch classes on client side
+    if (typeof window !== "undefined") {
+      fetchClasses();
+    }
   }, []);
 
   // Load all results with filtering for USER role
   const loadAllResults = async () => {
-    setLoading(prev => ({ ...prev, resultsLoading: true }));
+    setLoading((prev) => ({ ...prev, resultsLoading: true }));
     try {
       const results = await getAllCummulativeResult();
-      
+
       if (userRole === "USER") {
         const childUserId = localStorage.getItem("childUserId");
-        setAllResults(results.filter(result => result.studentId === childUserId));
+        setAllResults(
+          results.filter((result) => result.studentId === childUserId)
+        );
       } else {
         setAllResults(results);
       }
@@ -138,14 +138,14 @@ export default function ModernResultUpload() {
       toast.error("Failed to load results");
       console.error("Error:", error);
     } finally {
-      setLoading(prev => ({ ...prev, resultsLoading: false }));
+      setLoading((prev) => ({ ...prev, resultsLoading: false }));
     }
   };
 
   // Load students when a class is selected
   const loadStudents = async (classId: string) => {
     setSelectedClassId(classId);
-    setLoading(prev => ({ ...prev, studentLoading: true }));
+    setLoading((prev) => ({ ...prev, studentLoading: true }));
 
     try {
       const classData = await getClassById(classId);
@@ -157,11 +157,13 @@ export default function ModernResultUpload() {
             return {
               ...student,
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              subjects: studentData?.subject?.map((subj: any) => ({
-                id: subj.id,
-                name: subj.name,
-                maxScore: 100,
-              })) || [],
+              subjects:
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                studentData?.subject?.map((subj: any) => ({
+                  id: subj.id,
+                  name: subj.name,
+                  maxScore: 100,
+                })) || [],
             };
           } catch (error) {
             console.error(`Error loading student ${student.id}:`, error);
@@ -182,7 +184,7 @@ export default function ModernResultUpload() {
       toast.error("Failed to load students");
       console.error("Error:", error);
     } finally {
-      setLoading(prev => ({ ...prev, studentLoading: false }));
+      setLoading((prev) => ({ ...prev, studentLoading: false }));
     }
   };
 
@@ -194,7 +196,7 @@ export default function ModernResultUpload() {
   ) => {
     const numericValue = Math.min(100, Math.max(0, Number(value) || 0));
 
-    setScores(prev => {
+    setScores((prev) => {
       const current = prev[subjectId] || {
         subjectId,
         subjectName:
@@ -238,7 +240,7 @@ export default function ModernResultUpload() {
     const student = students[currentStudentIndex];
     if (!student) return;
 
-    setLoading(prev => ({ ...prev, submitting: true }));
+    setLoading((prev) => ({ ...prev, submitting: true }));
 
     try {
       const hasMissingScores = student.subjects?.some(
@@ -251,7 +253,9 @@ export default function ModernResultUpload() {
 
       await Promise.all(
         student.subjects?.map((subj) => {
-          const { subjectId, subjectName, total, ...resultData } = scores[subj.id];
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          const { subjectId, subjectName, total, ...resultData } =
+            scores[subj.id];
           return createResult({
             studentId: student.id,
             subjectId,
@@ -269,7 +273,7 @@ export default function ModernResultUpload() {
       toast.error("Failed to save results");
       console.error("Error:", error);
     } finally {
-      setLoading(prev => ({ ...prev, submitting: false }));
+      setLoading((prev) => ({ ...prev, submitting: false }));
     }
   };
 
@@ -297,10 +301,14 @@ export default function ModernResultUpload() {
         {/* Header */}
         <div className="mb-8 text-center">
           <h1 className="text-3xl font-bold text-gray-900">
-            {userRole === "USER" ? "Student Results Portal" : "Student Results Portal"}
+            {userRole === "USER"
+              ? "Student Results Portal"
+              : "Student Results Portal"}
           </h1>
           <p className="text-gray-600 mt-2">
-            {userRole === "USER" ? "View your child's academic performance" : "Efficient and accurate result management"}
+            {userRole === "USER"
+              ? "View your child's academic performance"
+              : "Efficient and accurate result management"}
           </p>
         </div>
 
@@ -321,7 +329,9 @@ export default function ModernResultUpload() {
                 loadAllResults();
               }}
               className={`px-4 py-2 rounded-r-lg ${
-                viewMode === "results" ? "bg-blue-600 text-white" : "bg-gray-200"
+                viewMode === "results"
+                  ? "bg-blue-600 text-white"
+                  : "bg-gray-200"
               }`}
             >
               View Results
@@ -668,7 +678,9 @@ export default function ModernResultUpload() {
           <div className="bg-white rounded-xl shadow-sm overflow-hidden">
             <div className="px-6 py-4 border-b">
               <h2 className="text-lg font-semibold text-gray-900">
-                {userRole === "USER" ? "Your Child's Results" : "All Recorded Results"}
+                {userRole === "USER"
+                  ? "Your Child's Results"
+                  : "All Recorded Results"}
               </h2>
             </div>
             <div className="p-6">
@@ -756,8 +768,8 @@ export default function ModernResultUpload() {
                 </div>
               ) : (
                 <div className="text-center py-12 text-gray-500">
-                  {userRole === "USER" 
-                    ? "No results available for your child" 
+                  {userRole === "USER"
+                    ? "No results available for your child"
                     : "No results recorded yet"}
                 </div>
               )}
