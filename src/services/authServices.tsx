@@ -1,10 +1,12 @@
 import api from "./api";
 
+const API_URL =
+  process.env.NEXT_PUBLIC_API_URL || "http://localhost:5003";
 const authService = {
   // Register a new user
   register: async (username: string, password: string) => {
     try {
-      const response = await api.post("/auth/register", { username, password });
+      const response = await api.post(`${API_URL}/auth/register`,{ username, password });
       return response.data;
     } catch (error) {
       throw error.response?.data || error.message;
