@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import TableSearch from "@/components/TableSearch";
-import { View, Filter, ArrowDownNarrowWide } from "lucide-react";
+import { View, Filter, ArrowDownNarrowWide } from 'lucide-react';
 import Pagination from "@/components/Pagination";
 import Table from "@/components/Table";
 import Link from "next/link";
@@ -38,7 +38,7 @@ const columns = [
   },
   {
     headers: "Blood-Type",
-    accessor: "fullName",
+    accessor: "bloodType",
     className: "",
     visibleFor: ["ADMIN", "USER"],
   },
@@ -68,13 +68,13 @@ const columns = [
   },
   {
     headers: "Email",
-    accessor: "Email",
+    accessor: "parentEmail",
     className: "",
     visibleFor: ["ADMIN", "USER"],
   },
   {
     headers: "Phone",
-    accessor: "Phone",
+    accessor: "parentPhone",
     className: "",
     visibleFor: ["ADMIN", "USER"],
   },

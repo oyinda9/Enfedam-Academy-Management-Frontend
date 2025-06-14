@@ -5,6 +5,9 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CloudUpload } from "lucide-react";
 import { createParent } from "@/services/parentService";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { FaSpinner } from "react-icons/fa";
 
 const schema = z.object({
   username: z
@@ -18,133 +21,92 @@ const schema = z.object({
   address: z.string().min(1, { message: "Address is required!" }),
 });
 
+type FormData = z.infer<typeof schema>;
+
 interface ParentFormProps {
   type?: "create" | "update";
-  data?: {
-    username: string;
-    name: string;
-    surname: string;
-    email: string;
-    phone: string;
-    address: string;
-  };
+  data?: FormData;
+  onClose?: () => void;
 }
 
-const ParentForm: React.FC<ParentFormProps> = ({ type = "create", data }) => {
+const ParentForm: React.FC<ParentFormProps> = ({ type = "create", data, onClose }) => {
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm({
+  } = useForm<FormData>({
     resolver: zodResolver(schema),
-    defaultValues: data || {}, // Use default values if `data` exists
+    defaultValues: data || {
+      username: "",
+      name: "",
+      surname: "",
+      email: "",
+      phone: "",
+      address: "",
+    },
   });
 
+  const [loading, setLoading] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
 
   const onSubmit = handleSubmit(async (formData) => {
+    setLoading(true);
     try {
-      const fullData = { ...formData };
-
       if (imageFile) {
-        // If your backend expects multipart/form-data
         const form = new FormData();
-        for (const key in fullData) {
-          form.append(key, fullData[key]);
-        }
-        form.append("img", imageFile);  // Append image file if it exists
+        Object.entries(formData).forEach(([key, value]) => {
+          form.append(key, value);
+        });
+        form.append("img", imageFile);
 
-        // Send FormData when an image is attached
-        const response = await createParent(form, true); // pass 'true' to indicate FormData
+        const response = await createParent(form, true);
         console.log("Parent created successfully:", response);
-        alert("Parent created successfully!");
+        toast.success("Parent created successfully!");
       } else {
-        // Send plain JSON data when no image is attached
-        const response = await createParent(fullData);
+        const response = await createParent(formData);
         console.log("Parent created successfully:", response);
-        alert("Parent created successfully!");
+        toast.success("Parent created successfully!");
+      }
+
+      if (onClose) {
+        setTimeout(() => {
+          onClose();
+        }, 1000);
       }
     } catch (error) {
       console.error("Error creating parent:", error);
-      alert("Failed to create parent!");
+      toast.error("Failed to create Parent");
+    } finally {
+      setLoading(false);
     }
   });
 
   return (
     <form className="p-6" onSubmit={onSubmit}>
+      <ToastContainer position="top-right" autoClose={3000} />
+
       <h1 className="text-xl font-semibold mb-6">
         {type === "create" ? "CREATE NEW PARENT" : "UPDATE PARENT"}
       </h1>
 
       <p className="text-lg font-medium mb-4">Personal Information</p>
+
       <div className="grid grid-cols-3 gap-6 mb-6">
-        {/* Username */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Username</label>
-          <input
-            type="text"
-            {...register("username")}
-            className="ring-1 ring-gray-600 p-2 rounded-md text-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <p className="text-xs text-red-600">{errors.username?.message}</p>
-        </div>
+        {["username", "name", "surname", "email", "phone", "address"].map((field) => (
+          <div key={field}>
+            <label className="block text-sm font-medium text-gray-700 capitalize">
+              {field}
+            </label>
+            <input
+              type={field === "email" ? "email" : "text"}
+              {...register(field as keyof FormData)}
+              className="ring-1 ring-gray-600 p-2 rounded-md text-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <p className="text-xs text-red-600">{errors?.[field as keyof FormData]?.message}</p>
+          </div>
+        ))}
 
-        {/* Name */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Name</label>
-          <input
-            type="text"
-            {...register("name")}
-            className="ring-1 ring-gray-600 p-2 rounded-md text-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <p className="text-xs text-red-600">{errors.name?.message}</p>
-        </div>
-
-        {/* Surname */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Surname</label>
-          <input
-            type="text"
-            {...register("surname")}
-            className="ring-1 ring-gray-600 p-2 rounded-md text-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <p className="text-xs text-red-600">{errors.surname?.message}</p>
-        </div>
-
-        {/* Email */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Email</label>
-          <input
-            type="email"
-            {...register("email")}
-            className="ring-1 ring-gray-600 p-2 rounded-md text-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <p className="text-xs text-red-600">{errors.email?.message}</p>
-        </div>
-
-        {/* Phone */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Phone</label>
-          <input
-            type="text"
-            {...register("phone")}
-            className="ring-1 ring-gray-600 p-2 rounded-md text-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <p className="text-xs text-red-600">{errors.phone?.message}</p>
-        </div>
-
-        {/* Address */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Address</label>
-          <input
-            type="text"
-            {...register("address")}
-            className="ring-1 ring-gray-600 p-2 rounded-md text-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <p className="text-xs text-red-600">{errors.address?.message}</p>
-        </div>
-
-        {/* Profile Image */}
+        {/* Profile Image Upload */}
         <div>
           <label className="block text-sm font-medium text-gray-700">
             Profile Image (Optional)
@@ -159,7 +121,9 @@ const ParentForm: React.FC<ParentFormProps> = ({ type = "create", data }) => {
             <CloudUpload className="text-gray-500" />
           </div>
           {imageFile && (
-            <p className="text-xs text-green-600 mt-2">Image selected: {imageFile.name}</p>
+            <p className="text-xs text-green-600 mt-2">
+              Image selected: {imageFile.name}
+            </p>
           )}
         </div>
       </div>
@@ -167,9 +131,19 @@ const ParentForm: React.FC<ParentFormProps> = ({ type = "create", data }) => {
       <div>
         <button
           type="submit"
-          className="bg-blue-700 text-white p-3 rounded-md hover:bg-blue-800 w-full"
+          className="bg-blue-700 text-white p-3 rounded-md hover:bg-blue-800 w-full flex justify-center items-center gap-2"
+          disabled={loading}
         >
-          {type === "create" ? "Create" : "Update"}
+          {loading ? (
+            <>
+              <FaSpinner className="animate-spin" />
+              <span>Processing...</span>
+            </>
+          ) : type === "create" ? (
+            "Create"
+          ) : (
+            "Update"
+          )}
         </button>
       </div>
     </form>
