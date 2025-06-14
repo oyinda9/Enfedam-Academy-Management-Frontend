@@ -1,11 +1,12 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import Announcements from "@/components/Announcements";
-import AttendanceChart from "@/components/AttendanceChart";
-import CountChart from "@/components/CountChart";
-import EventCalendar from "@/components/EventCalendar";
-import FinanceChart from "@/components/FinanceChart";
-import UserCard from "@/components/UserCard";
+import dynamic from "next/dynamic";
+const Announcements = dynamic(() => import("@/components/Announcements"), { ssr: false });
+const AttendanceChart = dynamic(() => import("@/components/AttendanceChart"), { ssr: false });
+const CountChart = dynamic(() => import("@/components/CountChart"), { ssr: false });
+const FinanceChart = dynamic(() => import("@/components/FinanceChart"), { ssr: false });
+const EventCalendar = dynamic(() => import("@/components/EventCalendar"), { ssr: false });
+const UserCard = dynamic(() => import("@/components/UserCard"), { ssr: false });
 import { getAllParent } from "@/services/parentService";
 import { getAllStudents } from "@/services/studentService";
 import { getAllTeachers } from "@/services/teacherServices";
