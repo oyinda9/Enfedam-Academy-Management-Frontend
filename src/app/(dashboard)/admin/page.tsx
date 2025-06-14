@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-// import Announcements from "@/components/Announcements";
+import Announcements from "@/components/Announcements";
 import AttendanceChart from "@/components/AttendanceChart";
 import CountChart from "@/components/CountChart";
 import EventCalendar from "@/components/EventCalendar";
@@ -40,7 +40,7 @@ const AdminPage = () => {
   return (
     <div className="p-4 flex gap-4 flex-col md:flex-row font-poppins">
       {/* LEFT */}
-      <div className="w-full lg:w-2/3 flex flex-col gap-12">
+      <div className="w-full lg:w-2/3 flex flex-col gap-4">
         {/* USER CARDS */}
         <div className="flex space-x-4">
           <UserCard type="student" count={totals.students} />
@@ -50,7 +50,7 @@ const AdminPage = () => {
 
         {/* MIDDLE CHARTS */}
         <div className="flex gap-4 flex-col lg:flex-row">
-          <div className="w-full lg:w-1/3 h-[450px]">
+          <div className="w-full lg:w-1/3 ">
             <CountChart />
           </div>
           <div className="w-full lg:w-2/3 h-[450px]">
@@ -59,15 +59,15 @@ const AdminPage = () => {
         </div>
 
         {/* BOTTOM CHARTS */}
-        <div className="w-full h-[550px] mt-[-20px]">
+        <div className="w-full mt-[-20px]">
           <FinanceChart />
         </div>
       </div>
 
       {/* RIGHT */}
-      <div className="w-full lg:w-1/3 flex flex-col gap-8  ">
+      <div className="w-full lg:w-1/3 flex flex-col gap-4  ">
         <EventCalendar />
-        {/* <Announcements /> */}
+        <Announcements />
       </div>
     </div>
   );

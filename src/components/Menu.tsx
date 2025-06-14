@@ -151,7 +151,7 @@ const Menu = () => {
       {/* Mobile Menu Toggle Button */}
       <button
         onClick={toggleMobileMenu}
-        className="lg:hidden fixed top-4 left-4 z-50 p-2 bg-white rounded-md shadow-md border"
+        className="lg:hidden fixed top-4 left-4 z-50 p-2 bg-white  rounded-md shadow-md border"
         aria-label="Toggle menu"
       >
         {isMobileMenuOpen ? <X size={24} /> : <MenuIcon size={24} />}
@@ -165,16 +165,11 @@ const Menu = () => {
       {/* Navigation Menu */}
       <nav
         className={`
-          fixed lg:static top-0 left-0 h-full bg-white border-r border-gray-200 z-40 transition-transform duration-300 ease-in-out
+          fixed lg:static top-0 left-0 h-full bg-white  lg:border-r lg:border-gray-200 z-40 transition-transform duration-300 ease-in-out
           ${isMobileMenuOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
-          w-64 lg:w-64 p-4 flex flex-col justify-start overflow-y-auto
+           p-4 flex flex-col justify-start
         `}
       >
-        {/* Mobile Menu Header */}
-        <div className="lg:hidden flex justify-between items-center mb-6 pt-12">
-          <h2 className="text-lg font-semibold text-gray-800">Menu</h2>
-        </div>
-
         {/* Main Menu */}
         <div className="flex-1">
           <ul className="space-y-2">
@@ -188,7 +183,7 @@ const Menu = () => {
                       className="flex items-center gap-3 text-gray-600 py-3 px-3 rounded-lg hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200 group"
                     >
                       <span className="text-blue-600 group-hover:text-blue-700 flex-shrink-0">{item.icon}</span>
-                      <span className="font-medium text-sm lg:text-base">{item.label}</span>
+                      <span className="font-medium text-xs">{item.label}</span>
                     </Link>
                   </li>
                 )
@@ -196,11 +191,6 @@ const Menu = () => {
               return null
             })}
           </ul>
-        </div>
-
-        {/* Footer for mobile */}
-        <div className="lg:hidden mt-6 pt-4 border-t border-gray-200">
-          <p className="text-xs text-gray-500 text-center">School Management System</p>
         </div>
       </nav>
     </>

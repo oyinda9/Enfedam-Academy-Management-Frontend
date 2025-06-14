@@ -1,34 +1,25 @@
-"use client";
-import React, { useEffect, useState } from "react";
-import { Ellipsis } from "lucide-react";
+"use client"
+import { useEffect, useState } from "react"
+import { Ellipsis } from "lucide-react"
 import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  Legend,
-} from "recharts";
-import { getAllAttendanceByStat } from "@/services/attendanceServices";
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
+} from "recharts"
+import { getAllAttendanceByStat } from "@/services/attendanceServices"
 
 const AttendanceChart = () => {
-  const [chartData, setChartData] = useState([]);
-  const [classData, setClassData] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [activeTab, setActiveTab] = useState("overview"); // 'overview' or 'classes'
+  const [chartData, setChartData] = useState([])
+  const [classData, setClassData] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+  const [activeTab, setActiveTab] = useState("overview")
 
-  // Fetch attendance data
   const fetchAttendanceData = async () => {
     try {
-      setLoading(true);
-      const response = await getAllAttendanceByStat();
-      const attendanceData = response.data;
+      setLoading(true)
+      const response = await getAllAttendanceByStat()
+      const attendanceData = response.data
 
-      // Transform data for weekly overview chart
-      const days = ["Mon", "Tue", "Wed", "Thu", "Fri"];
+      const days = ["Mon", "Tue", "Wed", "Thu", "Fri"]
       const transformedData = days.map((day) => {
         const dayData = {
           name: day,
@@ -36,22 +27,21 @@ const AttendanceChart = () => {
           maleAbsent: 0,
           femalePresent: 0,
           femaleAbsent: 0,
-        };
+        }
 
         attendanceData.forEach((classData) => {
-          const stats = classData.statistics[day];
+          const stats = classData.statistics[day]
           if (stats) {
-            dayData.malePresent += stats.male?.present || 0;
-            dayData.maleAbsent += stats.male?.absent || 0;
-            dayData.femalePresent += stats.female?.present || 0;
-            dayData.femaleAbsent += stats.female?.absent || 0;
+            dayData.malePresent += stats.male?.present || 0
+            dayData.maleAbsent += stats.male?.absent || 0
+            dayData.femalePresent += stats.female?.present || 0
+            dayData.femaleAbsent += stats.female?.absent || 0
           }
-        });
+        })
 
-        return dayData;
-      });
+        return dayData
+      })
 
-      // Transform data for class-specific view
       const classTransformedData = attendanceData.map((classItem) => {
         const classStats = {
           className: classItem.className,
@@ -59,80 +49,91 @@ const AttendanceChart = () => {
           maleAbsent: 0,
           femalePresent: 0,
           femaleAbsent: 0,
-        };
+        }
 
         days.forEach((day) => {
-          const stats = classItem.statistics[day];
+          const stats = classItem.statistics[day]
           if (stats) {
-            classStats.malePresent += stats.male?.present || 0;
-            classStats.maleAbsent += stats.male?.absent || 0;
-            classStats.femalePresent += stats.female?.present || 0;
-            classStats.femaleAbsent += stats.female?.absent || 0;
+            classStats.malePresent += stats.male?.present || 0
+            classStats.maleAbsent += stats.male?.absent || 0
+            classStats.femalePresent += stats.female?.present || 0
+            classStats.femaleAbsent += stats.female?.absent || 0
           }
-        });
+        })
 
-        return classStats;
-      });
+        return classStats
+      })
 
-      setChartData(transformedData);
-      setClassData(classTransformedData);
+      setChartData(transformedData)
+      setClassData(classTransformedData)
     } catch (err) {
-      console.error("Error fetching attendance data:", err);
-      setError(err.message || "Failed to load attendance data");
+      setError(err.message || "Failed to load attendance data")
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   useEffect(() => {
-    fetchAttendanceData();
-  }, []);
+    fetchAttendanceData()
+  }, [])
 
-  if (loading)
-    return (
-      <div className="bg-white rounded-lg p-4 shadow-md">
-        Loading attendance data...
-      </div>
-    );
-  if (error)
-    return (
-      <div className="bg-white rounded-lg p-4 shadow-md text-red-500">
-        Error: {error}
-      </div>
-    );
+  if (loading) return (
+    <div className="bg-white rounded-lg p-4 shadow-sm animate-pulse">
+      <div className="h-6 w-1/2 bg-gray-200 rounded mb-4"></div>
+      <div className="h-40 bg-gray-100 rounded"></div>
+    </div>
+  )
+  
+  if (error) return (
+    <div className="bg-white rounded-lg p-4 shadow-sm text-red-500 text-sm">
+      Error: {error}
+    </div>
+  )
+
+  const renderMobileData = (data, isClassView = false) => (
+    <div className="sm:hidden space-y-3 max-h-[300px] overflow-y-auto">
+      {data.map((item, index) => (
+        <div key={index} className="border-b border-gray-100 pb-3">
+          <h3 className="font-medium text-sm mb-2">
+            {isClassView ? item.className : item.name}
+          </h3>
+          <div className="grid grid-cols-2 gap-2 text-xs">
+            <div className="text-blue-500">Male Present: {item.malePresent}</div>
+            <div className="text-red-500">Male Absent: {item.maleAbsent}</div>
+            <div className="text-green-500">Female Present: {item.femalePresent}</div>
+            <div className="text-yellow-500">Female Absent: {item.femaleAbsent}</div>
+          </div>
+        </div>
+      ))}
+    </div>
+  )
 
   const renderChart = (data) => (
-    <div className="h-[300px]">
+    <div className="sm:h-[250px] md:h-[300px]">
       <ResponsiveContainer width="100%" height="100%">
-        <BarChart
-          data={data}
-          margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-          barGap={4}
-          barCategoryGap={12}
+        <BarChart 
+          data={data} 
+          margin={{ top: 10, right: 5, left: 0, bottom: 5 }}
+          barSize={activeTab === "classes" ? 12 : 16}
         >
-          <CartesianGrid
-            strokeDasharray="3 3"
-            vertical={false}
-            stroke="#e5e7eb"
-          />
+          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f3f4f6" />
           <XAxis
             dataKey={activeTab === "overview" ? "name" : "className"}
-            axisLine={false}
-            tick={{ fill: "#6b7280", fontSize: 12 }}
+            tick={{ fill: "#6b7280", fontSize: 10 }}
             tickLine={false}
+            interval={0}
           />
           <YAxis
-            axisLine={false}
-            tick={{ fill: "#6b7280", fontSize: 12 }}
+            tick={{ fill: "#6b7280", fontSize: 10 }}
             tickLine={false}
             allowDecimals={false}
           />
           <Tooltip
             contentStyle={{
               borderRadius: "6px",
-              borderColor: "#e5e7eb",
-              boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+              border: "1px solid #e5e7eb",
               fontSize: "12px",
+              padding: "8px",
             }}
             formatter={(value, name) => {
               const labels = {
@@ -140,101 +141,110 @@ const AttendanceChart = () => {
                 maleAbsent: "Male Absent",
                 femalePresent: "Female Present",
                 femaleAbsent: "Female Absent",
-              };
-              return [value, labels[name]];
+              }
+              return [value, labels[name]]
             }}
           />
           <Legend
             iconType="circle"
             iconSize={8}
-            wrapperStyle={{ fontSize: "12px", marginTop: "10px" }}
+            wrapperStyle={{ fontSize: "10px", paddingTop: "10px" }}
             formatter={(value) => {
               const labels = {
                 malePresent: "Male Present",
                 maleAbsent: "Male Absent",
                 femalePresent: "Female Present",
                 femaleAbsent: "Female Absent",
-              };
-              return labels[value];
+              }
+              return labels[value]
             }}
           />
-          <Bar
-            dataKey="malePresent"
-            name="malePresent"
-            fill="#3b82d6"
-            radius={[4, 4, 0, 0]}
+          <Bar 
+            dataKey="malePresent" 
+            name="malePresent" 
+            fill="#3b82f6" 
+            radius={[2, 2, 0, 0]} 
           />
-          <Bar
-            dataKey="maleAbsent"
-            name="maleAbsent"
-            fill="#ef4444"
-            radius={[4, 4, 0, 0]}
+          <Bar 
+            dataKey="maleAbsent" 
+            name="maleAbsent" 
+            fill="#ef4444" 
+            radius={[2, 2, 0, 0]} 
           />
-          <Bar
-            dataKey="femalePresent"
-            name="femalePresent"
-            fill="#34D399" // Green color
-            radius={[4, 4, 0, 0]}
+          <Bar 
+            dataKey="femalePresent" 
+            name="femalePresent" 
+            fill="#10b981" 
+            radius={[2, 2, 0, 0]} 
           />
-          <Bar
-            dataKey="femaleAbsent"
-            name="femaleAbsent"
-            fill="#F59E0B" // Yellow color
-            radius={[4, 4, 0, 0]}
+          <Bar 
+            dataKey="femaleAbsent" 
+            name="femaleAbsent" 
+            fill="#f59e0b" 
+            radius={[2, 2, 0, 0]} 
           />
         </BarChart>
       </ResponsiveContainer>
     </div>
-  );
+  )
 
   return (
-    <div className="bg-white rounded-lg p-4 h-[90%] w-full shadow-md">
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-lg font-semibold">Attendance Overview</h1>
-        <div className="flex items-center">
-          <div className="flex border rounded-md overflow-hidden">
-            <button
-              className={`px-3 py-1 text-sm ${
-                activeTab === "overview"
-                  ? "bg-blue-500 text-white"
-                  : "bg-white text-gray-700"
-              }`}
-              onClick={() => setActiveTab("overview")}
-            >
-              Weekly
-            </button>
-            <button
-              className={`px-3 py-1 text-sm ${
-                activeTab === "classes"
-                  ? "bg-blue-500 text-white"
-                  : "bg-white text-gray-700"
-              }`}
-              onClick={() => setActiveTab("classes")}
-            >
-              By Class
-            </button>
-          </div>
-          <Ellipsis className="cursor-pointer text-gray-500 ml-2" />
+    <div className="bg-white rounded-lg p-3 shadow-sm w-full">
+      {/* Header */}
+      <div className="flex flex-col gap-3 mb-4">
+        <div className="flex justify-between items-start">
+          <h1 className="text-sm font-semibold">Attendance Overview</h1>
+          <Ellipsis className="text-gray-500 w-4 h-4" />
+        </div>
+        
+        <div className="flex border rounded-md overflow-hidden">
+          <button
+            className={`flex-1 px-2 py-1 text-xs ${
+              activeTab === "overview" 
+                ? "bg-blue-500 text-white" 
+                : "bg-white text-gray-700"
+            }`}
+            onClick={() => setActiveTab("overview")}
+          >
+            Weekly
+          </button>
+          <button
+            className={`flex-1 px-2 py-1 text-xs ${
+              activeTab === "classes" 
+                ? "bg-blue-500 text-white" 
+                : "bg-white text-gray-700"
+            }`}
+            onClick={() => setActiveTab("classes")}
+          >
+            By Class
+          </button>
         </div>
       </div>
 
+      {/* Content */}
       {activeTab === "overview" ? (
         chartData.length > 0 ? (
-          renderChart(chartData)
+          <>
+            <div className="hidden sm:block">{renderChart(chartData)}</div>
+            {renderMobileData(chartData)}
+          </>
         ) : (
-          <div className="h-[300px] flex items-center justify-center text-gray-500">
-            No weekly attendance data available
+          <div className="text-gray-500 text-sm text-center py-8">
+            No weekly data available
           </div>
         )
       ) : classData.length > 0 ? (
-        renderChart(classData)
+        <>
+          <div className="hidden sm:block">{renderChart(classData)}</div>
+          {renderMobileData(classData, true)}
+        </>
       ) : (
-        <div className="h-[300px] flex items-center justify-center text-gray-500">
-          No class attendance data available
+        <div className="text-gray-500 text-sm text-center py-8">
+          No class data available
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default AttendanceChart;
+export default AttendanceChart

@@ -38,7 +38,7 @@ const EventCalendar = () => {
 
       {/* Events Section */}
       <div className="flex items-center justify-between mt-6">
-        <h1 className="text-xl font-semibold my-4">Events</h1>
+        <h1 className="text-xl font-semibold my-4">Annoucements</h1>
         <Ellipsis className="cursor-pointer text-black" />
       </div>
 
