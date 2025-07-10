@@ -27,7 +27,7 @@ const authService = {
       }
 
       // Send login request
-      const response = await api.post("/auth/login", payload);
+      const response = await api.post(`${API_URL}/auth/login`, payload);
       const { token, role } = response.data;
 
       // Save token & role to localStorage
