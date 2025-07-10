@@ -6,7 +6,7 @@ import {
   User,
   Users,
   GraduationCap,
-  ClipboardList,
+
   Book,
   School,
   FileText,
@@ -34,6 +34,7 @@ const Menu = () => {
 
   const dashboardLinks = {
     ADMIN: "/admin",
+    EXECUTIVE: "/executives",
     STUDENT: "/student",
     TEACHER: "/teacher",
     USER: "/parent",
@@ -44,50 +45,45 @@ const Menu = () => {
       label: "Home",
       icon: <Home size={20} />,
       link: dashboardLinks[userRole as keyof typeof dashboardLinks] || "/",
-      visible: ["ADMIN", "STUDENT", "USER", "TEACHER"],
+      visible: ["ADMIN", "STUDENT", "USER", "TEACHER", "EXECUTIVE"],
     },
     {
       label: "Students",
       icon: <GraduationCap size={20} />,
       link: "/list/students",
-      visible: ["ADMIN", "TEACHER", "USER"],
+      visible: ["ADMIN", "TEACHER", "USER", ],
     },
     {
       label: "Teachers",
       icon: <User size={20} />,
       link: "/list/teachers",
-      visible: ["ADMIN"],
+      visible: ["ADMIN","EXECUTIVE",],
     },
     {
       label: "Parents",
       icon: <Users size={20} />,
       link: "/list/parents",
-      visible: ["ADMIN", "TEACHER"],
+      visible: ["ADMIN", "TEACHER", "EXECUTIVE"],
     },
     {
       label: "Classes",
       icon: <School size={20} />,
       link: "/list/classes",
-      visible: ["ADMIN", "TEACHER", "STUDENT"],
+      visible: ["ADMIN", "TEACHER", "STUDENT", "EXECUTIVE"],
     },
     {
       label: "Subjects",
       icon: <Book size={20} />,
       link: "/list/subjects",
-      visible: ["ADMIN", "TEACHER"],
+      visible: ["ADMIN", "TEACHER", "EXECUTIVE"],
     },
     {
       label: "Lessons",
       icon: <Captions size={20} />,
       link: "/list/lessons",
-      visible: ["ADMIN", "TEACHER"],
+      visible: ["ADMIN", "TEACHER", "EXECUTIVE"],
     },
-    {
-      label: "Exams",
-      icon: <ClipboardList size={20} />,
-      link: "/list/exams",
-      visible: ["ADMIN", "STUDENT", "TEACHER"],
-    },
+ 
     {
       label: "Assignments",
       icon: <FileText size={20} />,
@@ -98,19 +94,19 @@ const Menu = () => {
       label: "Attendance",
       icon: <CheckCircle size={20} />,
       link: "/list/attendance",
-      visible: ["ADMIN", "TEACHER"],
+      visible: ["ADMIN", "TEACHER", "EXECUTIVE"],
     },
     {
       label: "Result",
       icon: <Award size={20} />,
       link: "/list/results",
-      visible: ["ADMIN", "USER", "TEACHER", "STUDENT"],
+      visible: ["ADMIN", "USER", "TEACHER", "STUDENT", "EXECUTIVE"],
     },
     {
       label: "Report",
       icon: <ReceiptText size={20} />,
       link: "/list/report",
-      visible: ["ADMIN"],
+      visible: ["ADMIN", "EXECUTIVE"],
     },
     {
       label: "Financial Report",
@@ -128,13 +124,13 @@ const Menu = () => {
       label: "Events",
       icon: <Calendar size={20} />,
       link: "/list/events",
-      visible: ["ADMIN", "STUDENT", "USER", "TEACHER"],
+      visible: ["ADMIN", "STUDENT", "USER", "TEACHER", "EXECUTIVE"],
     },
     {
       label: "Messages",
       icon: <MessageSquare size={20} />,
       link: "/list/messages",
-      visible: ["ADMIN", "STUDENT", "USER", "TEACHER"],
+      visible: ["ADMIN", "STUDENT", "USER", "TEACHER", "EXECUTIVE"],
     },
   ]
 

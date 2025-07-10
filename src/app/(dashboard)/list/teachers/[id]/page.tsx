@@ -52,7 +52,7 @@ const SingleTeacherPage = () => {
   const [loading, setLoading] = useState(true);
   const [showAll, setShowAll] = useState(false);
   const [classes, setClasses] = useState<Class[]>([]);
-  const [subjects, setSubjects] = useState<Subject[]>([]);
+  const [subjects, setSubjects] = useState([]);
   const [selectedClasses, setSelectedClasses] = useState<number[]>([]);
   const [selectedSubjects, setSelectedSubjects] = useState<number[]>([]);
   const [isAssigning, setIsAssigning] = useState(false);
@@ -77,7 +77,9 @@ const SingleTeacherPage = () => {
         .then((data) => {
           setTeacher(data);
           setSelectedClasses(data.classes?.map((cls: Class) => cls.id) || []);
-          setSelectedSubjects(data.subjects?.map((subject: Subject) => subject.id) || []);
+          setSelectedSubjects(
+            data.subjects?.map((subject: Subject) => subject.id) || []
+          );
           setLoading(false);
         })
         .catch((error) => {
@@ -115,8 +117,12 @@ const SingleTeacherPage = () => {
       if (response.success) {
         const updatedTeacher = await getTeacherById(id as string);
         setTeacher(updatedTeacher);
-        setSelectedClasses(updatedTeacher.classes?.map((cls: Class) => cls.id) || []);
-        setSelectedSubjects(updatedTeacher.subjects?.map((subject: Subject) => subject.id) || []);
+        setSelectedClasses(
+          updatedTeacher.classes?.map((cls: Class) => cls.id) || []
+        );
+        setSelectedSubjects(
+          updatedTeacher.subjects?.map((subject: Subject) => subject.id) || []
+        );
         alert("Classes and subjects assigned successfully!");
       } else {
         alert(`Assignment failed: ${response.message}`);
@@ -194,13 +200,8 @@ const SingleTeacherPage = () => {
           </div>
         </div>
 
-        {/* SCHEDULE SECTION */}
-        <div className="p-4 rounded-md h-[800px]">
-          <h2 className="text-lg font-semibold mb-2">
-            Teacher&apos;s Schedule
-          </h2>
-          <BigCalendar />
-        </div>
+  
+        
       </div>
 
       {/* RIGHT SECTION */}
@@ -252,23 +253,26 @@ const SingleTeacherPage = () => {
           <h2 className="text-lg font-semibold mb-4">
             Assign Classes and Subjects
           </h2>
-          
+
           {/* Class Selection */}
           <div className="mb-4">
             <h3 className="text-sm font-medium text-gray-700">Classes</h3>
             <div className="mt-2 space-y-2">
               {classes.map((cls) => (
-                <label key={cls.id} className="flex items-center gap-3 text-sm cursor-pointer">
+                <label
+                  key={cls.id}
+                  className="flex items-center gap-3 text-sm cursor-pointer"
+                >
                   <input
                     type="checkbox"
                     value={cls.id}
                     checked={selectedClasses.includes(cls.id)}
                     onChange={(e) => {
                       const value = Number(e.target.value);
-                      setSelectedClasses(prev =>
+                      setSelectedClasses((prev) =>
                         e.target.checked
                           ? [...prev, value]
-                          : prev.filter(id => id !== value)
+                          : prev.filter((id) => id !== value)
                       );
                     }}
                     className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
@@ -278,33 +282,40 @@ const SingleTeacherPage = () => {
               ))}
             </div>
           </div>
-          
+
           {/* Subject Selection */}
           <div className="mb-4">
             <h3 className="text-sm font-medium text-gray-700">Subjects</h3>
-            <div className="mt-2 space-y-2">
-              {subjects.map((subject) => (
-                <label key={subject.id} className="flex items-center gap-3 text-sm cursor-pointer">
-                  <input
-                    type="checkbox"
-                    value={subject.id}
-                    checked={selectedSubjects.includes(subject.id)}
-                    onChange={(e) => {
-                      const value = Number(e.target.value);
-                      setSelectedSubjects(prev =>
-                        e.target.checked
-                          ? [...prev, value]
-                          : prev.filter(id => id !== value)
-                      );
-                    }}
-                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                  />
-                  <span>{subject.name}</span>
-                </label>
-              ))}
+            <div className="mb-4">
+              <h3 className="text-sm font-medium text-gray-700">Subjects</h3>
+              <div className="mt-2 space-y-2">
+                {Array.isArray(subjects) &&
+                  subjects.map((subject) => (
+                    <label
+                      key={subject.id}
+                      className="flex items-center gap-3 text-sm cursor-pointer"
+                    >
+                      <input
+                        type="checkbox"
+                        value={subject.id}
+                        checked={selectedSubjects.includes(subject.id)}
+                        onChange={(e) => {
+                          const value = Number(e.target.value);
+                          setSelectedSubjects((prev) =>
+                            e.target.checked
+                              ? [...prev, value]
+                              : prev.filter((id) => id !== value)
+                          );
+                        }}
+                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                      />
+                      <span>{subject.name}</span>
+                    </label>
+                  ))}
+              </div>
             </div>
           </div>
-          
+
           {/* Save Button */}
           <div className="flex justify-end">
             <button

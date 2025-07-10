@@ -59,6 +59,7 @@ const Login = () => {
 
       const roleRoutes: Record<string, string> = {
         ADMIN: "/admin",
+         EXECUTIVE: "/executives",
         TEACHER: "/teacher",
         STUDENT: "/student",
         USER: "/parent",

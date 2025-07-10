@@ -112,7 +112,14 @@ const StudentListPage = () => {
             (student) => student.class?.supervisorId === loggedInUser?.user?.id
           );
           setStudents(filteredTeacherStudents);
-        } else if (loggedInUser?.role === "ADMIN") {
+        }
+        else if (loggedInUser?.role === "EXECUTIVE") {
+          const filteredTeacherStudents = data.filter(
+            (student) => student.class?.supervisorId === loggedInUser?.user?.id
+          );
+          setStudents(filteredTeacherStudents);
+        }
+         else if (loggedInUser?.role === "ADMIN") {
           setStudents(data);
         }
       } catch (error) {

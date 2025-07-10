@@ -189,9 +189,9 @@ const AttendanceChart = () => {
   )
 
   return (
-    <div className="bg-white rounded-lg p-3 shadow-sm w-full">
+    <div className="bg-white rounded-lg p-2 shadow-md w-full">
       {/* Header */}
-      <div className="flex flex-col gap-3 mb-4">
+      <div className="flex flex-col gap-3 mt-3 ">
         <div className="flex justify-between items-start">
           <h1 className="text-sm font-semibold">Attendance Overview</h1>
           <Ellipsis className="text-gray-500 w-4 h-4" />
