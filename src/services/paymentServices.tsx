@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import axios from "axios";
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5003";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "";
 
 export const uploadReceipt = async (
   file: File,

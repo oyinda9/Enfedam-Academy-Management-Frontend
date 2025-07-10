@@ -2,7 +2,7 @@
 import axios from "axios";
 
 const API_URL =
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:5003/";
+  process.env.NEXT_PUBLIC_API_URL || "https://enfedam-backend.onrender.com";
 
 interface ClassFormData {
   name: string;
