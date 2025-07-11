@@ -266,7 +266,7 @@ const ResponsiveClassesListPage: React.FC = () => {
                 <ArrowDownNarrowWide size={22} color="black" />
               </button>
               {(userRole === "ADMIN" || userRole === "EXECUTIVE") && (
-                <FormModal table="teacher" type="create" />
+                <FormModal table="class" type="create" />
               )}
             </div>
           </div>
@@ -319,7 +319,7 @@ const ResponsiveClassesListPage: React.FC = () => {
                   </button>
                 </div>
                 {(userRole === "ADMIN" || userRole === "EXECUTIVE") && (
-                  <FormModal table="teacher" type="create" />
+                  <FormModal table="class" type="create" />
                 )}
               </div>
             </div>
@@ -341,7 +341,7 @@ const ResponsiveClassesListPage: React.FC = () => {
                   Get started by creating your first class.
                 </p>
                 {(userRole === "ADMIN" || userRole === "EXECUTIVE") && (
-                  <FormModal table="teacher" type="create" />
+                  <FormModal table="class" type="create" />
                 )}
               </div>
             </div>
