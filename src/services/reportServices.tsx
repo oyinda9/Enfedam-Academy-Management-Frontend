@@ -1,5 +1,5 @@
 import axios from "axios";
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://enfedam-backend.onrender.com";
 export const getFullReport = async () => {
   try {
     const response = await axios.get(`${API_URL}/report/full`);
