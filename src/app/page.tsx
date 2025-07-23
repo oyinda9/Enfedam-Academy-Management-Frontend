@@ -95,7 +95,7 @@ const Login = () => {
               src="/enfedam-logo.png"
               alt="Login Illustration"
               width={120}
-              height={140}
+              height={120}
               className="rounded-full shadow-md"
             />
           </div>
